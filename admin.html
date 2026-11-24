@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>관리자 — Pureripple</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="theme-color" content="#fdf1f7" />
+
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Noto+Serif+KR:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="admin.css" />
+  </head>
+  <body class="ad-body" data-view="boot">
+    <a class="skip-link" href="#adminMain">본문으로 건너뛰기</a>
+
+    <!-- 관리자 헤더 -->
+    <header class="ad-header">
+      <div class="ad-header-inner">
+        <a class="ad-brand" href="index.html" title="블로그로 돌아가기">
+          <span class="ad-brand-name">Pureripple</span>
+          <span class="ad-brand-tag">Admin</span>
+        </a>
+
+        <div class="ad-header-tools">
+          <span class="ad-conn" id="connChip" hidden>
+            <span class="ad-conn-dot" aria-hidden="true"></span>
+            <span id="connText">연결 확인 중</span>
+          </span>
+          <a class="ad-textlink" href="index.html" target="_blank" rel="noopener">
+            사이트 보기
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M14 4h6v6"></path>
+              <path d="M20 4 11 13"></path>
+              <path d="M18 14v5.5a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 .5-.5H10"></path>
+            </svg>
+          </a>
+          <button class="ad-out" id="logoutBtn" type="button" hidden>나가기</button>
+        </div>
+      </div>
+    </header>
+
+    <main id="adminMain">
+      <!-- 연결 확인 중 (저장된 토큰이 있을 때 잠깐 보입니다) -->
+      <section class="ad-view ad-boot" id="viewBoot" aria-live="polite" aria-label="연결 확인 중">
+        <span class="ad-boot-mark" aria-hidden="true"></span>
+        <p>연결을 확인하는 중…</p>
+      </section>
+
+      <!-- ============================== 로그인 ============================== -->
+      <section class="ad-view ad-login" id="viewLogin" aria-labelledby="loginTitle">
+        <div class="ad-login-rings" aria-hidden="true"></div>
+
+        <div class="ad-login-card">
+          <p class="eyebrow">Writing room</p>
+          <h1 class="ad-login-title" id="loginTitle">관리자 로그인</h1>
+          <p class="ad-login-lede">
+            글을 쓰고 고치는 곳이에요. GitHub 토큰으로 연결하면 이 브라우저에서 바로
+            저장할 수 있어요.
+          </p>
+
+          <div class="ad-alert" id="loginNotice" role="alert" hidden></div>
+
+          <form id="loginForm" novalidate>
+            <div class="ad-field-row">
+              <label class="ad-field">
+                <span class="ad-label">Owner</span>
+                <input
+                  class="ad-input"
+                  id="ownerInput"
+                  name="owner"
+                  type="text"
+                  value="xirown"
+                  autocomplete="username"
+                  spellcheck="false"
+                  required
+                />
+              </label>
+              <label class="ad-field">
+                <span class="ad-label">Repo</span>
+                <input
+                  class="ad-input"
+                  id="repoInput"
+                  name="repo"
+                  type="text"
+                  value="xirown.github.io"
+                  autocomplete="off"
+                  spellcheck="false"
+                  required
+                />
+              </label>
+            </div>
+
+            <label class="ad-field">
+              <span class="ad-label">
+                GitHub Personal Access Token
+                <a class="ad-label-link" href="https://github.com/settings/tokens" target="_blank" rel="noopener">발급 페이지</a>
+              </span>
+              <span class="ad-secret">
+                <input
+                  class="ad-input"
+                  id="tokenInput"
+                  name="token"
+                  type="password"
+                  placeholder="github_pat_… 또는 ghp_…"
+                  autocomplete="off"
+                  spellcheck="false"
+                  required
+                />
+                <button class="ad-secret-toggle" id="tokenToggle" type="button" aria-label="토큰 보기" aria-pressed="false">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M2.5 12S6 5.8 12 5.8 21.5 12 21.5 12 18 18.2 12 18.2 2.5 12 2.5 12z"></path>
+                    <circle cx="12" cy="12" r="2.6"></circle>
+                  </svg>
+                </button>
+              </span>
+            </label>
+
+            <details class="ad-token-help">
+              <summary>토큰은 어떻게 만들까요?</summary>
+              <ol>
+                <li><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">새 토큰 만들기</a>를 엽니다.</li>
+                <li><strong>Repository access</strong>에서 <em>Only select repositories</em> → <strong>xirown.github.io</strong>를 고릅니다.</li>
+                <li><strong>Permissions</strong> → <em>Repository permissions</em> → <strong>Contents</strong>를 <strong>Read and write</strong>로 바꿉니다.</li>
+                <li><strong>Generate token</strong>을 누르고, 나온 값을 위 칸에 붙여 넣습니다.</li>
+              </ol>
+              <p class="ad-hint">
+                클래식 토큰을 쓴다면 <strong>repo</strong> 권한만 있으면 돼요. 토큰은 다른
+                사람에게 보여 주지 마세요.
+              </p>
+            </details>
+
+            <button class="btn btn-primary ad-block" id="loginBtn" type="submit">로그인</button>
+          </form>
+
+          <div class="ad-or"><span>또는</span></div>
+
+          <button class="btn btn-ghost ad-block" id="previewBtn" type="button">
+            미리보기 모드로 둘러보기
+          </button>
+          <p class="ad-note">
+            토큰은 이 브라우저에만 저장되고, GitHub 외의 곳으로 보내지 않아요.
+          </p>
+        </div>
+      </section>
+
+      <!-- ============================== 대시보드 ============================== -->
+      <section class="ad-view" id="viewDashboard" aria-labelledby="dashTitle">
+        <div class="ad-wrap">
+          <header class="ad-pagehead">
+            <div>
+              <p class="eyebrow">Writing room</p>
+              <h1 class="ad-title" id="dashTitle">글 관리</h1>
+              <p class="ad-lede" id="dashLede">
+                지금까지 남긴 글을 여기서 고치고 지울 수 있어요.
+              </p>
+            </div>
+            <div class="ad-pagehead-actions">
+              <button class="btn btn-ghost" id="analyticsBtn" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M4 20V9"></path>
+                  <path d="M10 20V4"></path>
+                  <path d="M16 20v-7"></path>
+                  <path d="M22 20H2"></path>
+                </svg>
+                통계
+              </button>
+              <button class="btn btn-ghost" id="settingsBtn" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="7.5"></circle>
+                  <path d="M2.8 12h18.4"></path>
+                  <path d="M12 4.5c2.2 2.4 3.3 4.9 3.3 7.5s-1.1 5.1-3.3 7.5c-2.2-2.4-3.3-4.9-3.3-7.5S9.8 6.9 12 4.5z"></path>
+                </svg>
+                사이트 설정
+              </button>
+              <button class="btn btn-primary" id="newPostBtn" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 5v14M5 12h14"></path>
+                </svg>
+                새 글 쓰기
+              </button>
+            </div>
+          </header>
+
+          <div class="ad-stats" id="dashStats" aria-label="글 현황"></div>
+
+          <div class="ad-alert" id="dashError" role="alert" hidden>
+            <span id="dashErrorText"></span>
+            <button class="ad-alert-btn" id="dashRetry" type="button">다시 시도</button>
+          </div>
+
+          <div class="ad-panel">
+            <div class="ad-panel-head">
+              <h2 class="ad-panel-title">발행된 글 <span class="ad-count" id="postCount"></span></h2>
+              <span class="ad-repo" id="repoLabel"></span>
+            </div>
+
+            <div class="ad-loading" id="dashLoading">글 목록을 불러오는 중…</div>
+            <div class="ad-postlist" id="postList"></div>
+
+            <div class="ad-empty" id="dashEmpty" hidden>
+              <span class="ad-empty-heart" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 20.1c-1.2-.8-7.3-4.9-7.3-9.3a4 4 0 0 1 7.3-2.4 4 4 0 0 1 7.3 2.4c0 4.4-6.1 8.5-7.3 9.3z"></path>
+                </svg>
+              </span>
+              <strong>아직 쓴 글이 없어요</strong>
+              <p>첫 글을 남기면 여기에 쌓입니다.</p>
+              <button class="btn btn-primary" id="emptyNewBtn" type="button">첫 글 쓰기</button>
+            </div>
+          </div>
+
+          <p class="ad-footnote" id="dashFootnote">
+            저장하면 GitHub 저장소에 바로 커밋돼요. 사이트에 반영되기까지 1분쯤 걸릴 수 있어요.
+          </p>
+        </div>
+      </section>
+
+      <!-- ============================== 사이트 설정 ============================== -->
+      <section class="ad-view ad-settings" id="viewSettings" aria-labelledby="settingsTitle">
+        <div class="ad-wrap">
+          <header class="ad-pagehead">
+            <div>
+              <p class="eyebrow">Site settings</p>
+              <h1 class="ad-title" id="settingsTitle">사이트 설정</h1>
+              <p class="ad-lede" id="settingsLede">
+                검색엔진에 이 블로그를 보여 줄지 정하고, 구글·네이버 인증 코드와 방문자
+                통계(GoatCounter)를 넣어 둘 수 있어요.
+              </p>
+            </div>
+            <div class="ad-pagehead-actions">
+              <button class="btn btn-ghost" id="settingsBack" type="button">글 목록</button>
+            </div>
+          </header>
+
+          <div class="ad-seo-stack">
+            <div class="ad-alert" id="seoError" role="alert" hidden></div>
+
+            <div class="ad-panel">
+              <div class="ad-panel-head">
+                <h2 class="ad-panel-title">
+                  지금 상태 <span class="ad-seo-badge" id="seoBadge">확인 중</span>
+                </h2>
+                <span class="ad-repo" id="seoRepoLabel"></span>
+              </div>
+              <div class="ad-seo-body">
+                <p class="ad-seo-lead" id="seoStatusText">
+                  저장소의 robots.txt 와 index.html 을 읽어 오는 중이에요.
+                </p>
+                <div class="ad-seo-facts" id="seoFacts"></div>
+              </div>
+            </div>
+
+            <div class="ad-panel">
+              <div class="ad-panel-head">
+                <h2 class="ad-panel-title">검색엔진 공개</h2>
+                <span class="ad-seo-flag" id="seoModeFlag">공개</span>
+              </div>
+              <div class="ad-seo-body">
+                <label class="ad-switch ad-switch--seo">
+                  <input id="seoPublicInput" type="checkbox" checked />
+                  <span class="ad-switch-ui" aria-hidden="true"></span>
+                  <span class="ad-switch-label">검색엔진에 공개하기</span>
+                </label>
+                <p class="ad-hint" id="seoPublicHint"></p>
+                <ul class="ad-seo-changes" id="seoChanges"></ul>
+              </div>
+            </div>
+
+            <div class="ad-panel">
+              <div class="ad-panel-head">
+                <h2 class="ad-panel-title">검색 등록 인증 코드</h2>
+                <span class="ad-repo">index.html &lt;head&gt;</span>
+              </div>
+              <div class="ad-seo-body">
+                <div class="ad-field-row">
+                  <label class="ad-field">
+                    <span class="ad-label">Google Search Console <em>google-site-verification</em></span>
+                    <input
+                      class="ad-input"
+                      id="googleVerifyInput"
+                      type="text"
+                      autocomplete="off"
+                      spellcheck="false"
+                      placeholder="인증 코드를 붙여 넣으세요"
+                    />
+                  </label>
+                  <label class="ad-field">
+                    <span class="ad-label">네이버 서치어드바이저 <em>naver-site-verification</em></span>
+                    <input
+                      class="ad-input"
+                      id="naverVerifyInput"
+                      type="text"
+                      autocomplete="off"
+                      spellcheck="false"
+                      placeholder="인증 코드를 붙여 넣으세요"
+                    />
+                  </label>
+                </div>
+                <p class="ad-hint">
+                  인증 코드는 index.html 의 &lt;head&gt; 에 &lt;meta&gt; 태그로 들어가요. 칸을 비우고
+                  저장하면 태그가 지워집니다. 구글·네이버 콘솔에서 발급한 content 값만 붙여 넣으세요.
+                </p>
+              </div>
+            </div>
+
+            <div class="ad-panel">
+              <div class="ad-panel-head">
+                <h2 class="ad-panel-title">방문자 통계 (GoatCounter)</h2>
+                <span class="ad-repo">index.html · post.html</span>
+              </div>
+              <div class="ad-seo-body">
+                <label class="ad-field">
+                  <span class="ad-label">사이트 코드 <em>예: pureripple</em></span>
+                  <input
+                    class="ad-input"
+                    id="goatInput"
+                    type="text"
+                    autocomplete="off"
+                    spellcheck="false"
+                    maxlength="63"
+                    placeholder="pureripple"
+                  />
+                </label>
+                <p class="ad-hint">
+                  GoatCounter 에서 만든 사이트 코드를 넣고 저장하면 index.html 과 post.html 에
+                  가벼운 방문자 카운터 스크립트가 들어가요. 비우면 빠집니다.
+                  <a href="https://www.goatcounter.com/signup" target="_blank" rel="noopener">
+                    무료로 시작하기 (1분)
+                  </a>
+                </p>
+              </div>
+            </div>
+
+            <div class="ad-panel">
+              <div class="ad-panel-head">
+                <h2 class="ad-panel-title">저장될 파일 미리보기</h2>
+                <span class="ad-repo" id="seoPreviewNote"></span>
+              </div>
+              <div class="ad-seo-files" id="seoFiles"></div>
+            </div>
+
+            <div class="ad-seo-actions">
+              <button class="btn btn-primary" id="seoSaveBtn" type="button">설정 저장</button>
+              <button class="btn btn-ghost" id="seoReloadBtn" type="button">저장소에서 다시 읽기</button>
+              <span class="ad-seo-savehint" id="seoSaveHint"></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================== 통계 ============================== -->
+      <section class="ad-view ad-analytics" id="viewAnalytics" aria-labelledby="analyticsTitle">
+        <div class="ad-wrap">
+          <header class="ad-pagehead">
+            <div>
+              <p class="eyebrow">Insights</p>
+              <h1 class="ad-title" id="analyticsTitle">통계</h1>
+              <p class="ad-lede" id="analyticsLede">
+                블로그에 쌓인 글과 검색·구독 상태, 그리고 GoatCounter 방문자 통계를 한 화면에서 봐요.
+              </p>
+            </div>
+            <div class="ad-pagehead-actions">
+              <button class="btn btn-ghost" id="analyticsBack" type="button">글 목록</button>
+              <button class="btn btn-ghost" id="analyticsRefresh" type="button">새로고침</button>
+            </div>
+          </header>
+
+          <div class="ad-stats ad-stats--four" id="anStats" aria-label="블로그 콘텐츠 통계"></div>
+
+          <div class="ad-an-grid">
+            <div class="ad-panel">
+              <div class="ad-panel-head">
+                <h2 class="ad-panel-title">카테고리 분포</h2>
+                <span class="ad-repo" id="anCatNote"></span>
+              </div>
+              <div class="ad-an-body" id="anCategories"></div>
+            </div>
+            <div class="ad-panel">
+              <div class="ad-panel-head">
+                <h2 class="ad-panel-title">인기 태그</h2>
+                <span class="ad-repo">TOP 8</span>
+              </div>
+              <div class="ad-an-body" id="anTags"></div>
+            </div>
+          </div>
+
+          <div class="ad-panel">
+            <div class="ad-panel-head">
+              <h2 class="ad-panel-title">사이트 상태</h2>
+              <span class="ad-repo" id="anSiteNote"></span>
+            </div>
+            <div class="ad-an-body">
+              <div class="ad-an-checks" id="anChecks"></div>
+            </div>
+          </div>
+
+          <div class="ad-panel">
+            <div class="ad-panel-head">
+              <h2 class="ad-panel-title">방문자 <span class="ad-seo-badge" id="anGoatBadge">확인 중</span></h2>
+              <span class="ad-repo" id="anGoatNote"></span>
+            </div>
+            <div class="ad-an-body" id="anVisitors"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================== 에디터 ============================== -->
+      <section class="ad-view ad-editor" id="viewEditor" aria-labelledby="editorHeading">
+        <div class="ad-wrap ad-wrap--wide">
+          <h1 class="ad-visually-hidden" id="editorHeading">글 작성</h1>
+
+          <div class="ad-editor-head">
+            <div class="ad-editor-crumb">
+              <button class="ad-back" id="editorBack" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M20 12H5"></path>
+                  <path d="m11 6-6 6 6 6"></path>
+                </svg>
+                글 목록
+              </button>
+              <span class="ad-crumb-sep" aria-hidden="true">/</span>
+              <span class="ad-crumb-now" id="editorMode">새 글</span>
+              <span class="ad-dirty" id="dirtyFlag" hidden>저장 안 됨</span>
+            </div>
+            <div class="ad-editor-actions">
+              <button class="btn btn-ghost ad-sm" id="editorCancel" type="button">취소</button>
+              <button class="btn btn-primary" id="saveBtn" type="button">발행하기</button>
+            </div>
+          </div>
+
+          <input
+            class="ad-title-input"
+            id="titleInput"
+            type="text"
+            maxlength="120"
+            placeholder="제목을 적어 주세요"
+            aria-label="글 제목"
+            autocomplete="off"
+          />
+
+          <div class="ad-alert ad-alert--form" id="formError" role="alert" hidden></div>
+
+          <div class="ad-editor-grid">
+            <!-- 메타 정보 -->
+            <aside class="ad-meta" aria-label="글 정보">
+              <label class="ad-field">
+                <span class="ad-label">
+                  주소 <em>영문 · 숫자 · 하이픈</em>
+                </span>
+                <span class="ad-slugwrap">
+                  <span class="ad-prefix" aria-hidden="true">?slug=</span>
+                  <input
+                    class="ad-input"
+                    id="slugInput"
+                    type="text"
+                    inputmode="latin"
+                    maxlength="80"
+                    placeholder="a-day-by-the-sea"
+                    autocomplete="off"
+                    spellcheck="false"
+                  />
+                  <button class="ad-slug-again" id="slugAgain" type="button" title="제목으로 다시 만들기" aria-label="제목으로 주소 다시 만들기">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M20 11a8 8 0 1 0-2.6 6"></path>
+                      <path d="M20 5v6h-6"></path>
+                    </svg>
+                  </button>
+                </span>
+                <p class="ad-hint" id="slugHint">제목을 쓰면 자동으로 채워져요.</p>
+              </label>
+
+              <div class="ad-field-row">
+                <label class="ad-field">
+                  <span class="ad-label">카테고리</span>
+                  <select class="ad-input ad-select" id="categoryInput">
+                    <option value="일상">일상</option>
+                    <option value="생각">생각</option>
+                    <option value="작업·공부">작업·공부</option>
+                  </select>
+                </label>
+                <label class="ad-field">
+                  <span class="ad-label">날짜</span>
+                  <input class="ad-input" id="dateInput" type="date" />
+                </label>
+              </div>
+
+              <label class="ad-field ad-field--wide">
+                <span class="ad-label">
+                  요약 <em>한두 줄</em>
+                </span>
+                <textarea
+                  class="ad-input ad-textarea"
+                  id="summaryInput"
+                  rows="3"
+                  maxlength="160"
+                  placeholder="카드에 보여 줄 짧은 소개"
+                ></textarea>
+              </label>
+
+              <label class="ad-field">
+                <span class="ad-label">
+                  태그 <em>쉼표로 구분</em>
+                </span>
+                <input
+                  class="ad-input"
+                  id="tagsInput"
+                  type="text"
+                  placeholder="바다, 산책, 가을"
+                  autocomplete="off"
+                />
+              </label>
+
+              <label class="ad-switch">
+                <input id="featuredInput" type="checkbox" />
+                <span class="ad-switch-ui" aria-hidden="true"></span>
+                <span class="ad-switch-label">추천 글로 올리기</span>
+              </label>
+
+              <div class="ad-field ad-cover">
+                <span class="ad-label" id="coverLabel">표지 이미지</span>
+                <select class="ad-input ad-select" id="coverSelect" aria-labelledby="coverLabel">
+                  <option value="assets/hero.jpg">기본 표지 · 바다</option>
+                </select>
+                <div class="ad-cover-row">
+                  <img class="ad-cover-thumb" id="coverPreview" alt="" hidden />
+                  <div class="ad-cover-copy">
+                    <button class="ad-minibt" id="coverUploadBtn" type="button">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M12 16V4"></path>
+                        <path d="m7 9 5-5 5 5"></path>
+                        <path d="M4 15v4.5a.5.5 0 0 0 .5.5h15a.5.5 0 0 0 .5-.5V15"></path>
+                      </svg>
+                      새 이미지 올리기
+                    </button>
+                    <input id="coverFile" type="file" accept="image/*" hidden />
+                  </div>
+                </div>
+                <p class="ad-hint" id="coverHint">고르거나 새로 올리면 assets/covers/에 저장돼요.</p>
+              </div>
+
+              <div class="ad-meta-foot">
+                <span id="readHint">1분 읽기</span>
+                <span class="ad-dot" aria-hidden="true"></span>
+                <span id="charHint">0자</span>
+              </div>
+            </aside>
+
+            <!-- 본문 -->
+            <div class="ad-compose" id="compose" data-pane="write">
+              <div class="ad-tabs" role="tablist" aria-label="본문 보기 방식">
+                <button class="ad-tab is-active" type="button" role="tab" aria-selected="true" data-pane="write">쓰기</button>
+                <button class="ad-tab" type="button" role="tab" aria-selected="false" data-pane="preview">미리보기</button>
+              </div>
+
+              <div class="ad-toolbar" role="toolbar" aria-label="본문 서식">
+                <button class="ad-tool ad-tool--bold" type="button" data-action="bold" title="굵게" aria-label="굵게">
+                  <span aria-hidden="true">B</span>
+                </button>
+                <button class="ad-tool ad-tool--italic" type="button" data-action="italic" title="기울임" aria-label="기울임">
+                  <span aria-hidden="true">I</span>
+                </button>
+                <button class="ad-tool" type="button" data-action="heading" title="소제목" aria-label="소제목">
+                  <span aria-hidden="true">H2</span>
+                </button>
+                <button class="ad-tool" type="button" data-action="quote" title="인용문" aria-label="인용문">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M5 6.5v11"></path>
+                    <path d="M9.5 8h9.5M9.5 12h9.5M9.5 16h9.5"></path>
+                  </svg>
+                </button>
+                <button class="ad-tool" type="button" data-action="link" title="링크" aria-label="링크">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M10.5 13.5a3.5 3.5 0 0 0 5 0l3-3a3.5 3.5 0 0 0-5-5l-1.4 1.4"></path>
+                    <path d="M13.5 10.5a3.5 3.5 0 0 0-5 0l-3 3a3.5 3.5 0 0 0 5 5l1.4-1.4"></path>
+                  </svg>
+                </button>
+                <span class="ad-toolbar-sep" aria-hidden="true"></span>
+                <button class="ad-tool" type="button" data-action="image" title="본문 이미지" aria-label="본문 이미지">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="3.5" y="5" width="17" height="14" rx="1.5"></rect>
+                    <circle cx="9" cy="10" r="1.4"></circle>
+                    <path d="m4.5 17 4.6-4.3 3.2 2.9 3-2.6 4.2 4"></path>
+                  </svg>
+                </button>
+                <span class="ad-toolbar-hint" aria-hidden="true">마크다운</span>
+              </div>
+
+              <div class="ad-split" id="editorSplit" data-pane="write">
+                <div class="ad-pane ad-pane--write">
+                  <label class="ad-visually-hidden" for="bodyInput">본문</label>
+                  <textarea
+                    id="bodyInput"
+                    placeholder="마크다운으로 적어 주세요.&#10;&#10;## 소제목&#10;문단을 쓰고 **굵게**, *기울임*, [링크](https://example.com)도 됩니다.&#10;&#10;> 인용문은 이렇게."
+                    spellcheck="false"
+                  ></textarea>
+                </div>
+                <div class="ad-pane ad-pane--preview">
+                  <div class="ad-preview" id="previewPane">
+                    <p class="ad-preview-empty">여기에 본문이 그대로 보여요.</p>
+                  </div>
+                </div>
+              </div>
+
+              <details class="ad-en" id="enDetails">
+                <summary>
+                  <span class="ad-en-title">영문 버전 (선택)</span>
+                  <em>EN 모드에서 보여 줄 제목 · 요약 · 본문</em>
+                </summary>
+                <div class="ad-en-body">
+                  <div class="ad-field-row">
+                    <label class="ad-field">
+                      <span class="ad-label">Title (English)</span>
+                      <input
+                        class="ad-input"
+                        id="titleEnInput"
+                        type="text"
+                        maxlength="120"
+                        autocomplete="off"
+                        placeholder="A day by the sea"
+                      />
+                    </label>
+                    <label class="ad-field">
+                      <span class="ad-label">Summary (English)</span>
+                      <input
+                        class="ad-input"
+                        id="summaryEnInput"
+                        type="text"
+                        maxlength="200"
+                        autocomplete="off"
+                        placeholder="One or two lines for the card"
+                      />
+                    </label>
+                  </div>
+                  <label class="ad-field">
+                    <span class="ad-label">Body (English, markdown)</span>
+                    <textarea
+                      class="ad-input ad-textarea"
+                      id="bodyEnInput"
+                      rows="7"
+                      placeholder="English version of the post. 비워 두면 EN 모드에서도 원문이 보여요."
+                      spellcheck="false"
+                    ></textarea>
+                  </label>
+                  <p class="ad-hint">
+                    영문 본문은 <code>posts/{slug}.en.md</code> 로 함께 저장돼요. 비우고 저장하면
+                    영문 파일이 지워지고, 공개 페이지는 원문을 보여 줍니다.
+                  </p>
+                </div>
+              </details>
+
+              <div class="ad-editor-foot">
+                <span id="editorFootNote">저장하면 posts/와 posts.json에 함께 기록돼요.</span>
+                <button class="btn btn-primary ad-sm ad-save-mobile" id="saveBtnMobile" type="button">발행하기</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- 토스트 -->
+    <div class="ad-toast" id="toast" role="status" aria-live="polite" hidden>
+      <span class="ad-toast-dot" aria-hidden="true"></span>
+      <span id="toastText"></span>
+    </div>
+
+    <!-- 삭제 확인 -->
+    <dialog class="ad-dialog" id="deleteDialog" aria-labelledby="deleteTitle">
+      <div class="ad-dialog-panel">
+        <p class="ad-dialog-eyebrow">Delete</p>
+        <h2 class="ad-dialog-title" id="deleteTitle">이 글을 지울까요?</h2>
+        <p class="ad-dialog-lede">
+          ‘<strong id="deletePostTitle"></strong>’ 글과 GitHub 저장소의
+          <code id="deletePath"></code> 파일이 함께 사라져요. 되돌릴 수 없어요.
+        </p>
+        <div class="ad-dialog-actions">
+          <button class="btn btn-ghost" id="deleteCancel" type="button">취소</button>
+          <button class="btn ad-btn-danger" id="deleteConfirm" type="button">삭제하기</button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- 미리보기 모드 안내 -->
+    <dialog class="ad-dialog" id="demoDialog" aria-labelledby="demoTitle">
+      <div class="ad-dialog-panel">
+        <p class="ad-dialog-eyebrow">Preview mode</p>
+        <h2 class="ad-dialog-title" id="demoTitle">미리보기 모드예요</h2>
+        <p class="ad-dialog-lede" id="demoBody">
+          화면과 편집은 그대로 쓸 수 있지만, 저장은 되지 않아요.
+        </p>
+        <p class="ad-dialog-note" id="demoPaths"></p>
+        <div class="ad-dialog-actions">
+          <button class="btn btn-ghost" id="demoClose" type="button">닫기</button>
+          <button class="btn btn-primary" id="demoLogin" type="button">토큰으로 로그인</button>
+        </div>
+      </div>
+    </dialog>
+
+    <noscript>
+      <div class="ad-noscript">
+        <strong>관리자 페이지는 자바스크립트가 필요해요.</strong>
+        <p>브라우저에서 자바스크립트를 켜 주세요.</p>
+      </div>
+    </noscript>
+
+    <script src="admin.js"></script>
+  </body>
+</html>

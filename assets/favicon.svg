@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Pureripple">
+  <rect width="64" height="64" rx="14" fill="#380d23"/>
+  <path d="M8 38c6 0 8-7 14-7s8 7 14 7 8-7 14-7" fill="none" stroke="#ffd9e8" stroke-width="3.2" stroke-linecap="round"/>
+  <path d="M8 48c6 0 8-6 14-6s8 6 14 6 8-6 14-6" fill="none" stroke="#ffd9e8" stroke-width="2.2" stroke-linecap="round" opacity=".55"/>
+  <circle cx="43.5" cy="21" r="4.2" fill="#f0568f" opacity=".95"/>
+</svg>

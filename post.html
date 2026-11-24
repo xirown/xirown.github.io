@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="index, follow" />
+    <title>글 읽기 — Pureripple</title>
+    <meta name="description" content="Pureripple의 글." />
+    <meta name="theme-color" content="#fdf1f7" />
+    <link rel="alternate" type="application/rss+xml" title="Pureripple RSS" href="feed.xml" />
+
+    <meta property="og:type" content="article" />
+    <meta property="og:title" id="ogTitle" content="글 읽기 — Pureripple" />
+    <meta property="og:description" id="ogDesc" content="Pureripple의 글." />
+    <meta property="og:image" id="ogImage" content="assets/hero.jpg" />
+
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Noto+Serif+KR:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#articleRoot">본문으로 건너뛰기</a>
+    <div class="reading-progress" id="readingProgress" aria-hidden="true"></div>
+
+    <header class="site-header" id="top">
+      <div class="header-inner">
+        <nav class="header-nav header-nav--left" aria-label="빠른 이동">
+          <a class="icon-link" href="index.html" aria-label="홈으로">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3.5 10.5 12 3.8l8.5 6.7V20a.8.8 0 0 1-.8.8h-5V15h-5.4v5.8h-5A.8.8 0 0 1 3.5 20z"></path>
+            </svg>
+          </a>
+          <a class="icon-link" href="index.html#archive" aria-label="글 목록 보기">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M7 3.5h7.5L19 8v12.5H7z"></path>
+              <path d="M14 3.5V8h5"></path>
+              <path d="M9.5 12.5h7M9.5 16h5"></path>
+            </svg>
+          </a>
+        </nav>
+
+        <a class="wordmark" href="index.html">Pureripple</a>
+
+        <div class="header-nav header-nav--right">
+          <div class="lang-switch" role="group" aria-label="Language">
+            <button class="lang-btn" type="button" data-lang="ko" aria-pressed="true">KO</button>
+            <span class="lang-sep" aria-hidden="true">/</span>
+            <button class="lang-btn" type="button" data-lang="en" aria-pressed="false">EN</button>
+          </div>
+          <a class="icon-link" href="index.html#archive" aria-label="검색">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="6.5"></circle>
+              <path d="m16 16 4 4"></path>
+            </svg>
+          </a>
+          <a class="header-link" href="index.html#about">About</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="article" id="articleRoot">
+      <div class="container">
+        <div class="loading">글을 불러오는 중…</div>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-top">
+          <div class="footer-brand">
+            <p class="footer-wordmark">Pureripple</p>
+            <p class="footer-line" data-i18n="footerLine">
+              마음에 남은 것들을 적어 두는 개인 블로그. 읽고, 만들고, 다시 적습니다.
+            </p>
+          </div>
+          <div>
+            <p class="footer-col-title" data-i18n="categories">Categories</p>
+            <ul class="footer-links">
+              <li><a href="index.html#archive" data-cat-link="일상" data-cat-label="일상">일상</a></li>
+              <li><a href="index.html#archive" data-cat-link="생각" data-cat-label="생각">생각</a></li>
+              <li><a href="index.html#archive" data-cat-link="작업·공부" data-cat-label="작업·공부">작업·공부</a></li>
+            </ul>
+          </div>
+          <div>
+            <p class="footer-col-title" data-i18n="elsewhere">Elsewhere</p>
+            <ul class="footer-links">
+              <li><a href="index.html#archive" data-i18n="allPosts">모든 글</a></li>
+              <li><a href="index.html#about" data-i18n="aboutMenu">소개</a></li>
+              <li><a href="feed.xml" type="application/rss+xml" data-i18n="rss">RSS</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <span data-i18n="footerNote">Pureripple · 개인 블로그</span>
+          <a class="to-top" href="#top" data-i18n="toTop">맨 위로 ↑</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>

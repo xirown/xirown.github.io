@@ -1,0 +1,123 @@
+{
+  "site": {
+    "title": "Pureripple",
+    "description": "일상과 생각, 작업의 기록을 천천히 쌓아 두는 개인 블로그.",
+    "author": "양갱",
+    "url": ""
+  },
+  "generatedAt": "2026-11-24T13:21:18",
+  "posts": [
+    {
+      "slug": "start",
+      "title": "Pureripple을 시작하며",
+      "category": "생각",
+      "date": "2026-11-21",
+      "summary": "블로그를 새로 시작한 이유, 그리고 이곳에 무엇을 남기고 싶은지에 대한 짧은 선언.",
+      "cover": "assets/covers/start.jpg",
+      "tags": [
+        "글쓰기",
+        "기록",
+        "블로그"
+      ],
+      "author": "양갱",
+      "featured": false,
+      "minutes": 2,
+      "file": "posts/start.md",
+      "title_en": "Starting Pureripple",
+      "summary_en": "Why I started another blog, and what I want to keep here.",
+      "hasEnBody": true
+    },
+    {
+      "slug": "sea-day",
+      "title": "바다를 보러 간 날",
+      "category": "일상",
+      "date": "2026-11-18",
+      "summary": "바람이 세던 오후, 아무것도 하지 않기 위해 바다로 갔던 이야기.",
+      "cover": "assets/covers/sea-day.jpg",
+      "tags": [
+        "바다",
+        "산책",
+        "가을"
+      ],
+      "author": "양갱",
+      "featured": false,
+      "minutes": 2,
+      "file": "posts/sea-day.md",
+      "title_en": "A day by the sea",
+      "summary_en": "A windy afternoon, and a trip to the sea to do absolutely nothing.",
+      "hasEnBody": true
+    },
+    {
+      "slug": "why-record",
+      "title": "기록을 남기는 이유",
+      "category": "생각",
+      "date": "2026-11-12",
+      "summary": "잊고 싶지 않은 것과 잊어도 괜찮은 것 사이에서, 기록이 해 주는 일.",
+      "cover": "assets/covers/why-record.jpg",
+      "tags": [
+        "기록",
+        "글쓰기",
+        "기억"
+      ],
+      "author": "양갱",
+      "featured": true,
+      "minutes": 2,
+      "file": "posts/why-record.md",
+      "title_en": "Why I keep a record",
+      "summary_en": "What keeping a record does, between what I want to remember and what I can let go.",
+      "hasEnBody": true
+    },
+    {
+      "slug": "handmade-web",
+      "title": "손으로 만드는 웹, 다시 시작한 공부",
+      "category": "작업·공부",
+      "date": "2026-11-06",
+      "summary": "노트에 그린 구조를 HTML과 CSS로 옮기며 배운 것들, 그리고 요즘의 공부 방식.",
+      "cover": "assets/covers/handmade-web.jpg",
+      "tags": [
+        "웹",
+        "HTML",
+        "CSS",
+        "공부"
+      ],
+      "author": "양갱",
+      "featured": false,
+      "minutes": 2,
+      "file": "posts/handmade-web.md"
+    },
+    {
+      "slug": "night-books",
+      "title": "밤에 읽는 책",
+      "category": "일상",
+      "date": "2026-10-29",
+      "summary": "잠이 오지 않는 밤에 펼친 책과, 밑줄 긋는 습관에 대하여.",
+      "cover": "assets/covers/night-books.jpg",
+      "tags": [
+        "책",
+        "밤",
+        "습관"
+      ],
+      "author": "양갱",
+      "featured": false,
+      "minutes": 2,
+      "file": "posts/night-books.md"
+    },
+    {
+      "slug": "autumn-notes",
+      "title": "가을 작업 노트 — 만든 것들",
+      "category": "작업·공부",
+      "date": "2026-10-21",
+      "summary": "이번 가을에 만든 작은 것들을 위한 목록 — 만든 이유와 남은 숙제.",
+      "cover": "assets/covers/autumn-notes.jpg",
+      "tags": [
+        "작업노트",
+        "회고",
+        "만들기"
+      ],
+      "author": "양갱",
+      "featured": false,
+      "minutes": 2,
+      "file": "posts/autumn-notes.md"
+    }
+  ]
+}

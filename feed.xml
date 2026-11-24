@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Pureripple</title>
+    <link>https://xirown.github.io/</link>
+    <description>일상과 생각, 작업의 기록을 천천히 쌓아 두는 개인 블로그.</description>
+    <language>ko</language>
+    <lastBuildDate>Sat, 21 Nov 2026 09:00:00 +0900</lastBuildDate>
+    <atom:link href="https://xirown.github.io/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Pureripple을 시작하며</title>
+      <link>https://xirown.github.io/post.html?slug=start</link>
+      <guid isPermaLink="true">https://xirown.github.io/post.html?slug=start</guid>
+      <pubDate>Sat, 21 Nov 2026 09:00:00 +0900</pubDate>
+      <category>생각</category>
+      <description>블로그를 새로 시작한 이유, 그리고 이곳에 무엇을 남기고 싶은지에 대한 짧은 선언.</description>
+    </item>
+    <item>
+      <title>바다를 보러 간 날</title>
+      <link>https://xirown.github.io/post.html?slug=sea-day</link>
+      <guid isPermaLink="true">https://xirown.github.io/post.html?slug=sea-day</guid>
+      <pubDate>Wed, 18 Nov 2026 09:00:00 +0900</pubDate>
+      <category>일상</category>
+      <description>바람이 세던 오후, 아무것도 하지 않기 위해 바다로 갔던 이야기.</description>
+    </item>
+    <item>
+      <title>기록을 남기는 이유</title>
+      <link>https://xirown.github.io/post.html?slug=why-record</link>
+      <guid isPermaLink="true">https://xirown.github.io/post.html?slug=why-record</guid>
+      <pubDate>Thu, 12 Nov 2026 09:00:00 +0900</pubDate>
+      <category>생각</category>
+      <description>잊고 싶지 않은 것과 잊어도 괜찮은 것 사이에서, 기록이 해 주는 일.</description>
+    </item>
+    <item>
+      <title>손으로 만드는 웹, 다시 시작한 공부</title>
+      <link>https://xirown.github.io/post.html?slug=handmade-web</link>
+      <guid isPermaLink="true">https://xirown.github.io/post.html?slug=handmade-web</guid>
+      <pubDate>Fri, 06 Nov 2026 09:00:00 +0900</pubDate>
+      <category>작업·공부</category>
+      <description>노트에 그린 구조를 HTML과 CSS로 옮기며 배운 것들, 그리고 요즘의 공부 방식.</description>
+    </item>
+    <item>
+      <title>밤에 읽는 책</title>
+      <link>https://xirown.github.io/post.html?slug=night-books</link>
+      <guid isPermaLink="true">https://xirown.github.io/post.html?slug=night-books</guid>
+      <pubDate>Thu, 29 Oct 2026 09:00:00 +0900</pubDate>
+      <category>일상</category>
+      <description>잠이 오지 않는 밤에 펼친 책과, 밑줄 긋는 습관에 대하여.</description>
+    </item>
+    <item>
+      <title>가을 작업 노트 — 만든 것들</title>
+      <link>https://xirown.github.io/post.html?slug=autumn-notes</link>
+      <guid isPermaLink="true">https://xirown.github.io/post.html?slug=autumn-notes</guid>
+      <pubDate>Wed, 21 Oct 2026 09:00:00 +0900</pubDate>
+      <category>작업·공부</category>
+      <description>이번 가을에 만든 작은 것들을 위한 목록 — 만든 이유와 남은 숙제.</description>
+    </item>
+  </channel>
+</rss>

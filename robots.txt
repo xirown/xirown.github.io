@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin.html
+Sitemap: https://xirown.github.io/sitemap.xml

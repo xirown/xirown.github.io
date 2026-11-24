@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="index, follow" />
+    <title>Pureripple — 마음에 남은 것들을 적는 곳</title>
+    <meta
+      name="description"
+      content="Pureripple은 일상과 생각, 작업의 기록을 천천히 쌓아 두는 개인 블로그입니다."
+    />
+    <meta name="theme-color" content="#fdf1f7" />
+    <link rel="alternate" type="application/rss+xml" title="Pureripple RSS" href="feed.xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Pureripple — 마음에 남은 것들을 적는 곳" />
+    <meta
+      property="og:description"
+      content="일상과 생각, 작업의 기록을 천천히 쌓아 두는 개인 블로그."
+    />
+    <meta property="og:image" content="assets/hero.jpg" />
+
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Noto+Serif+KR:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#archive">본문으로 건너뛰기</a>
+
+    <!-- 헤더 -->
+    <header class="site-header" id="top">
+      <div class="header-inner">
+        <nav class="header-nav header-nav--left" aria-label="빠른 이동">
+          <a class="icon-link" href="index.html" aria-label="홈으로">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3.5 10.5 12 3.8l8.5 6.7V20a.8.8 0 0 1-.8.8h-5V15h-5.4v5.8h-5A.8.8 0 0 1 3.5 20z"></path>
+            </svg>
+          </a>
+          <a class="icon-link" href="#archive" aria-label="글 목록 보기">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M7 3.5h7.5L19 8v12.5H7z"></path>
+              <path d="M14 3.5V8h5"></path>
+              <path d="M9.5 12.5h7M9.5 16h5"></path>
+            </svg>
+          </a>
+        </nav>
+
+        <a class="wordmark" href="index.html">Pureripple</a>
+
+        <div class="header-nav header-nav--right">
+          <div class="lang-switch" role="group" aria-label="Language">
+            <button class="lang-btn" type="button" data-lang="ko" aria-pressed="true">KO</button>
+            <span class="lang-sep" aria-hidden="true">/</span>
+            <button class="lang-btn" type="button" data-lang="en" aria-pressed="false">EN</button>
+          </div>
+          <button class="icon-link" id="searchJump" aria-label="글 검색하기">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="6.5"></circle>
+              <path d="m16 16 4 4"></path>
+            </svg>
+          </button>
+          <a class="header-link" href="#about">About</a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- 히어로 -->
+      <section class="hero" aria-labelledby="heroTitle">
+        <img
+          class="hero-img"
+          src="assets/hero.jpg"
+          alt="아침빛이 비치는 잔잔한 바다의 물결"
+          fetchpriority="high"
+          width="2200"
+          height="1240"
+        />
+        <div class="hero-veil" aria-hidden="true"></div>
+        <div class="hero-inner">
+          <h1 class="hero-title" id="heroTitle">What matters to you?</h1>
+          <div class="hero-actions">
+            <button
+              class="btn btn-mutual"
+              type="button"
+              id="mutualFriendOpen"
+              aria-haspopup="dialog"
+              aria-controls="mutualFriendDialog"
+            >
+              <svg class="btn-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 20.1c-1.2-.8-7.3-4.9-7.3-9.3a4 4 0 0 1 7.3-2.4 4 4 0 0 1 7.3 2.4c0 4.4-6.1 8.5-7.3 9.3z"></path>
+              </svg>
+              mutual friend
+              <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 12h15"></path>
+                <path d="m13 6 6 6-6 6"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 카테고리 · 검색 -->
+      <div class="toolbar" id="archive">
+        <div class="container toolbar-inner">
+          <div class="filters" id="filterBar" role="group" aria-label="카테고리 필터">
+            <button class="chip is-active" data-category="전체" aria-pressed="true">전체</button>
+          </div>
+
+          <div class="search" role="search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="6.5"></circle>
+              <path d="m16 16 4 4"></path>
+            </svg>
+            <input
+              id="searchInput"
+              type="search"
+              placeholder="제목이나 태그로 찾기"
+              aria-label="글 검색"
+              data-i18n-ph="searchPh"
+              data-i18n-aria="searchAria"
+              autocomplete="off"
+            />
+            <button class="search-clear" id="searchClear" aria-label="검색어 지우기" data-i18n-aria="clearAria" hidden>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" aria-hidden="true">
+                <path d="m6 6 12 12M18 6 6 18"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 추천 글 -->
+      <section class="section featured-section" aria-labelledby="featuredTitle" id="featuredSection">
+        <div class="container">
+          <div class="section-head">
+            <h2 class="section-title" id="featuredTitle" data-i18n="featured">추천 글</h2>
+            <p class="section-note" data-i18n="featuredNote">Featured</p>
+          </div>
+          <div id="featuredWrap">
+            <div class="loading">글을 불러오는 중…</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 최근 글 -->
+      <section class="section" aria-labelledby="recentTitle">
+        <div class="container">
+          <div class="section-head">
+            <h2 class="section-title" id="recentTitle" data-i18n="recent">최근 글</h2>
+            <p class="section-note" id="resultNote"></p>
+          </div>
+
+          <div class="post-grid" id="postGrid"></div>
+
+          <div class="empty-state" id="emptyState" hidden>
+            <strong data-i18n="emptyTitle">아직 이 조건에 맞는 글이 없어요</strong>
+            <span data-i18n="emptyBody">다른 검색어를 넣거나 카테고리를 바꿔 보세요.</span>
+            <div>
+              <button class="link-arrow" id="resetFilters" type="button" data-i18n="showAll">
+                전체 글 보기
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 소개 -->
+      <section class="about" id="about" aria-labelledby="aboutTitle">
+        <div class="container about-inner">
+          <div>
+            <p class="eyebrow">About</p>
+          </div>
+          <div>
+            <h2 class="about-quote" id="aboutTitle" data-i18n-html="aboutQuote">
+              “작은 물결도 계속 흐르면<br />
+              해안의 모양을 바꾼다.”
+            </h2>
+            <p class="about-body" data-i18n="aboutBody1">
+              Pureripple은 거창한 이야기보다, 지나가는 마음을 붙잡아 두는 곳입니다.
+              오늘 읽은 문장, 문득 든 생각, 손으로 만든 것들 — 잘 정리되지 않아도 괜찮으니
+              천천히 쌓아 두려 합니다.
+            </p>
+            <p class="about-body" data-i18n-html="aboutBody2">
+              글은 카테고리(<em>일상 · 생각 · 작업·공부</em>)로 나뉘고, 위쪽 검색창에서
+              제목이나 태그로 찾을 수 있습니다.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- 푸터 -->
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-top">
+          <div class="footer-brand">
+            <p class="footer-wordmark">Pureripple</p>
+            <p class="footer-line" data-i18n="footerLine">
+              마음에 남은 것들을 적어 두는 개인 블로그. 읽고, 만들고, 다시 적습니다.
+            </p>
+          </div>
+          <div>
+            <p class="footer-col-title" data-i18n="categories">Categories</p>
+            <ul class="footer-links">
+              <li><a href="#archive" data-cat-link="일상" data-cat-label="일상">일상</a></li>
+              <li><a href="#archive" data-cat-link="생각" data-cat-label="생각">생각</a></li>
+              <li><a href="#archive" data-cat-link="작업·공부" data-cat-label="작업·공부">작업·공부</a></li>
+            </ul>
+          </div>
+          <div>
+            <p class="footer-col-title" data-i18n="elsewhere">Elsewhere</p>
+            <ul class="footer-links">
+              <li><a href="#archive" data-i18n="allPosts">모든 글</a></li>
+              <li><a href="#about" data-i18n="aboutMenu">소개</a></li>
+              <li><a href="feed.xml" type="application/rss+xml" data-i18n="rss">RSS</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <span data-i18n="footerNote">Pureripple · 개인 블로그</span>
+          <a class="to-top" href="#top" data-i18n="toTop">맨 위로 ↑</a>
+        </div>
+      </div>
+    </footer>
+
+    <noscript>
+      <div class="container">
+        <div class="notice">
+          <h2>글 목록을 보려면 자바스크립트가 필요해요</h2>
+          <p>브라우저의 자바스크립트를 켜면 추천 글과 최근 글이 나타납니다.</p>
+        </div>
+      </div>
+    </noscript>
+
+    <!-- 서로이웃 신청 (Mutual Friend) 모달 -->
+    <dialog
+      class="mf-dialog"
+      id="mutualFriendDialog"
+      aria-labelledby="mfTitle"
+      aria-describedby="mfLede"
+    >
+      <div class="mf-panel">
+        <button class="mf-close" type="button" id="mfClose" aria-label="닫기">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" aria-hidden="true">
+            <path d="m6 6 12 12M18 6 6 18"></path>
+          </svg>
+        </button>
+
+        <div class="mf-head">
+          <p class="eyebrow" data-i18n="mfEyebrow">Mutual friend</p>
+          <h2 class="mf-title" id="mfTitle" data-i18n-html="mfTitle">서로이웃 <em>신청</em></h2>
+          <p class="mf-lede" id="mfLede" data-i18n="mfLede">
+            Pureripple의 새 글을 가장 먼저 나누고, 서로의 기록에 가끔 들르는
+            이웃이 되고 싶어요. 이름과 한마디만 남겨 주세요.
+          </p>
+        </div>
+
+        <form class="mf-form" id="mfForm" novalidate>
+          <div>
+            <label class="mf-label" for="mfName"
+              ><span data-i18n="mfName">닉네임</span>
+              <span class="mf-optional" data-i18n="mfRequired">필수</span></label
+            >
+            <input
+              class="mf-input"
+              id="mfName"
+              name="nickname"
+              type="text"
+              maxlength="20"
+              placeholder="서로 부를 이름"
+              data-i18n-ph="mfNamePh"
+              autocomplete="nickname"
+              aria-describedby="mfError"
+              required
+            />
+          </div>
+
+          <div>
+            <label class="mf-label" for="mfNote"
+              ><span data-i18n="mfNote">한마디</span>
+              <span class="mf-optional" data-i18n="mfOptional">선택</span></label
+            >
+            <textarea
+              class="mf-input"
+              id="mfNote"
+              name="note"
+              rows="3"
+              maxlength="160"
+              placeholder="요즘 마음에 남은 것, 혹은 인사 한 줄"
+              data-i18n-ph="mfNotePh"
+            ></textarea>
+          </div>
+
+          <div>
+            <label class="mf-label" for="mfContact"
+              ><span data-i18n="mfContact">연락처</span>
+              <span class="mf-optional" data-i18n="mfOptional">선택</span></label
+            >
+            <input
+              class="mf-input"
+              id="mfContact"
+              name="contact"
+              type="text"
+              maxlength="60"
+              placeholder="블로그 주소 · X · 이메일"
+              data-i18n-ph="mfContactPh"
+            />
+          </div>
+
+          <p class="mf-error" id="mfError" role="alert" data-i18n="mfError" hidden>
+            닉네임을 적어 주세요.
+          </p>
+          <p class="mf-privacy" data-i18n="mfPrivacy">
+            남겨 주신 연락처는 서로이웃 답장에만 쓸게요.
+          </p>
+
+          <div class="mf-actions">
+            <button class="btn btn-ghost" type="button" id="mfCancel" data-i18n="mfCancel">닫기</button>
+            <button class="btn btn-primary" type="submit" data-i18n="mfSubmit">신청하기</button>
+          </div>
+        </form>
+
+        <div class="mf-done" id="mfDone" hidden>
+          <span class="mf-badge" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 20.1c-1.2-.8-7.3-4.9-7.3-9.3a4 4 0 0 1 7.3-2.4 4 4 0 0 1 7.3 2.4c0 4.4-6.1 8.5-7.3 9.3z"></path>
+            </svg>
+          </span>
+          <h3 class="mf-done-title" id="mfDoneTitle" tabindex="-1" data-i18n="mfDoneTitle">
+            신청서가 준비됐어요
+          </h3>
+          <p class="mf-done-body" id="mfDoneBody" data-i18n="mfDoneBody">
+            아래 내용을 복사해서 X DM이나 이메일로 보내 주시면, 확인하고
+            천천히 답장 드릴게요.
+          </p>
+          <pre class="mf-preview" id="mfPreview"></pre>
+          <div class="mf-actions">
+            <button class="btn btn-ghost mf-copy" type="button" id="mfCopy" data-i18n="mfCopy">
+              내용 복사
+            </button>
+            <a class="btn btn-primary" id="mfSendX" href="#" data-i18n="mfSendX" hidden>X로 보내기</a>
+            <a class="btn btn-primary" id="mfSendMail" href="#" data-i18n="mfSendMail" hidden>이메일로 보내기</a>
+            <button class="btn btn-ghost" type="button" id="mfDoneClose" data-i18n="mfCancel">닫기</button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+
+    <script src="app.js"></script>
+  </body>
+</html>
