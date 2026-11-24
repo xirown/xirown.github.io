@@ -50,4 +50,4 @@ AI 스마트 안경, 초소형 카메라 같은 웨어러블 기기를 이용한
 
 ## 원문
 
-![수능은 공정한가 — 2026년 11월 17일 입장문](assets/images/suneung-fairness-original.jpg)
+![수능은 공정한가 — 2026년 11월 17일 입장문](./assets/images/suneung-fairness-original.jpg)

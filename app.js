@@ -530,11 +530,11 @@
 
   function sanitizeUrl(url) {
     var value = String(url || "").trim();
-    if (/^(https?:|mailto:|#|\/|\.\/|\.\.\/|[a-z0-9._-]+\.(html|jpg|jpeg|png|webp|svg|gif))/i.test(value)) {
-      // javascript: 같은 위험한 스킴은 걸러집니다.
-      if (/^javascript:/i.test(value)) return "#";
-      return value;
-    }
+    // javascript: 같은 위험한 스킴은 걸러집니다.
+    if (/^javascript:/i.test(value)) return "#";
+    if (/^(https?:|mailto:|#|\/|\.\/|\.\.\/)/i.test(value)) return value;
+    // 같은 사이트 안의 상대 경로(assets/…, posts/…)도 그대로 둡니다.
+    if (/^[a-z0-9][a-z0-9._\-\/]*$/i.test(value)) return value;
     return "#";
   }
 

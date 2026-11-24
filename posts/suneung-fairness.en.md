@@ -38,4 +38,4 @@ Bae Yeon-gyeong, a student sitting the 2027 CSAT
 
 ## The original statement
 
-![Is the CSAT fair? — statement of 17 November 2026](assets/images/suneung-fairness-original.jpg)
+![Is the CSAT fair? — statement of 17 November 2026](./assets/images/suneung-fairness-original.jpg)

@@ -4,7 +4,7 @@ Universities have mostly responded by holding a retake. At the same time they pr
 
 We think stronger invigilation is not the answer. The deeper question is why our universities and our society still rank people by test scores at all: a competitive, meritocratic order that culminates in the CSAT and in credentialism, and that teaches students that getting through the exam is all that matters.
 
-![Public forum poster](assets/covers/forum-2026.png)
+![Public forum poster](./assets/covers/forum-2026.png)
 
 ## What we are asking for
 
