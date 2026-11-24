@@ -1,6 +1,6 @@
 ---
 title: 밤에 읽는 책
-category: 일상
+category: Minor
 date: 2026-10-29
 summary: 잠이 오지 않는 밤에 펼친 책과, 밑줄 긋는 습관에 대하여.
 cover: assets/covers/night-books.jpg

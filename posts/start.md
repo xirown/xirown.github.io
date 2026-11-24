@@ -1,6 +1,6 @@
 ---
 title: Pureripple을 시작하며
-category: 생각
+category: Main
 date: 2026-11-21
 summary: 블로그를 새로 시작한 이유, 그리고 이곳에 무엇을 남기고 싶은지에 대한 짧은 선언.
 title_en: Starting Pureripple

@@ -2,13 +2,14 @@
 """
 Pureripple 사이트 파일 생성기
 --------------------------------------------------------------------------
-posts.json 의 글 목록으로 아래를 만듭니다. add-post.py 가 자동으로 불러 씁니다.
+posts.json 과 categories.json 을 읽어 아래를 만듭니다. add-post.py 가 자동으로 불러 씁니다.
 
   - sitemap.xml   검색엔진용 주소 목록 (robots.txt 가 공개 상태일 때만)
   - feed.xml      RSS 피드
   - p/{slug}.html 글별 공유 카드 (og 태그 + 글 페이지로 이동)
 
 관리자 페이지(admin.js)도 같은 형식으로 커밋하므로, 둘을 번갈아 써도 파일이 같습니다.
+카테고리 목록은 categories.json 하나로 관리합니다(공개 화면·관리자·이 스크립트가 함께 읽음).
 """
 
 from __future__ import annotations
@@ -20,6 +21,8 @@ from urllib.parse import quote
 
 SITE_URL = "https://xirown.github.io"
 DEFAULT_COVER = "assets/hero.jpg"
+CATEGORIES_FILE = "categories.json"
+DEFAULT_CATEGORIES = ["Main", "Minor", "Edu"]
 WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
@@ -33,6 +36,34 @@ def esc(value) -> str:
         .replace('"', "&quot;")
         .replace("'", "&#39;")
     )
+
+
+def load_categories(root: Path | str) -> list[str]:
+    """categories.json 의 목록을 읽습니다. 파일이 없거나 비어 있으면 기본 목록을 씁니다.
+
+    {"categories": ["Main", ...]} 와 ["Main", ...] 두 형식을 모두 받습니다.
+    """
+    path = Path(root) / CATEGORIES_FILE
+    data = None
+    if path.exists():
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            data = None
+    raw = data.get("categories") if isinstance(data, dict) else data
+    if not isinstance(raw, list):
+        return list(DEFAULT_CATEGORIES)
+    seen: list[str] = []
+    for item in raw:
+        name = str(item).strip()
+        if name and name not in seen:
+            seen.append(name)
+    return seen or list(DEFAULT_CATEGORIES)
+
+
+def categories_json_text(categories: list[str]) -> str:
+    """관리자 화면이 커밋하는 것과 같은 형식의 categories.json 본문."""
+    return json.dumps({"categories": list(categories)}, ensure_ascii=False, indent=2) + "\n"
 
 
 def site_base(site: dict | None) -> str:
@@ -81,9 +112,14 @@ def feed_date(value: str) -> str:
     return "%s, %02d %s %04d 09:00:00 +0900" % (WEEKDAYS[d.weekday()], d.day, MONTHS[d.month - 1], d.year)
 
 
-def feed_text(posts: list[dict], site: dict | None = None) -> str:
+def feed_text(
+    posts: list[dict],
+    site: dict | None = None,
+    categories: list[str] | None = None,
+) -> str:
     base = site_base(site)
     site = site or {}
+    fallback_category = (categories or DEFAULT_CATEGORIES)[0]
     items = sorted_posts(posts)
     newest = items[0].get("date", "") if items else dt.date.today().isoformat()
     out = [
@@ -105,7 +141,7 @@ def feed_text(posts: list[dict], site: dict | None = None) -> str:
             f"      <link>{esc(url)}</link>",
             f'      <guid isPermaLink="true">{esc(url)}</guid>',
             f"      <pubDate>{esc(feed_date(str(post.get('date') or newest)))}</pubDate>",
-            f"      <category>{esc(post.get('category') or '기록')}</category>",
+            f"      <category>{esc(post.get('category') or fallback_category)}</category>",
             f"      <description>{esc(post.get('summary', ''))}</description>",
             "    </item>",
         ]
@@ -185,6 +221,7 @@ def write_site_files(root: Path, data: dict) -> list[str]:
     root = Path(root)
     posts = sorted_posts(data.get("posts", []))
     site = data.get("site") or {}
+    categories = load_categories(root)
     written: list[str] = []
 
     sitemap_path = root / "sitemap.xml"
@@ -195,7 +232,7 @@ def write_site_files(root: Path, data: dict) -> list[str]:
         sitemap_path.unlink()
         written.append("sitemap.xml (삭제)")
 
-    (root / "feed.xml").write_text(feed_text(posts, site), encoding="utf-8")
+    (root / "feed.xml").write_text(feed_text(posts, site, categories), encoding="utf-8")
     written.append("feed.xml")
 
     share_dir = root / "p"

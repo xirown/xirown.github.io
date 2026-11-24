@@ -10,12 +10,17 @@
 
   var state = {
     posts: [],
+    categories: [],
     category: "전체",
     query: "",
     post: null,
     postBodies: null,
     postsIndex: -1
   };
+
+  /* 카테고리 목록은 categories.json 하나로 관리합니다(관리자 페이지에서 추가·삭제). */
+  var CATEGORIES_FILE = "categories.json";
+  var DEFAULT_CATEGORIES = ["Main", "Minor", "Edu"];
 
   /* ---------------------------------------------------------------------
      작은 도우미들
@@ -131,7 +136,9 @@
       prevEmpty: "이전 글",
       nextEmpty: "다음 글",
       noPost: "글이 없습니다",
-      related: "같은 주제의 글",
+      related: "연관 추천글",
+      relatedNote: "Related posts",
+      relatedTagNote: "같은 태그",
       seeAll: "전체 보기",
       contents: "Contents",
       toc: "목차",
@@ -186,7 +193,7 @@
       aboutBody1:
         "Pureripple은 거창한 이야기보다, 지나가는 마음을 붙잡아 두는 곳입니다. 오늘 읽은 문장, 문득 든 생각, 손으로 만든 것들 — 잘 정리되지 않아도 괜찮으니 천천히 쌓아 두려 합니다.",
       aboutBody2:
-        "글은 카테고리(<em>일상 · 생각 · 작업·공부</em>)로 나뉘고, 위쪽 검색창에서 제목이나 태그로 찾을 수 있습니다.",
+        "글은 카테고리(<em>Main · Minor · Edu</em>)로 나뉘고, 위쪽 검색창에서 제목이나 태그로 찾을 수 있습니다.",
       title: "Pureripple — 마음에 남은 것들을 적는 곳"
     },
     en: {
@@ -210,7 +217,9 @@
       prevEmpty: "Older post",
       nextEmpty: "Newer post",
       noPost: "No post",
-      related: "More like this",
+      related: "Related posts",
+      relatedNote: "More to read",
+      relatedTagNote: "shared tag",
       seeAll: "See all",
       contents: "Contents",
       toc: "Contents",
@@ -265,11 +274,13 @@
       aboutBody1:
         "Pureripple is less about grand stories and more about catching a passing feeling. A sentence read today, a thought that arrived, something made by hand — none of it has to be tidy. It can just gather, slowly.",
       aboutBody2:
-        "Posts are sorted by category (<em>Daily · Thoughts · Work & Study</em>) and can be found by title or tag in the search box above.",
+        "Posts are sorted by category (<em>Main · Minor · Edu</em>) and can be found by title or tag in the search box above.",
       title: "Pureripple — a place for what stays with me"
     }
   };
 
+  /* 예전 카테고리 이름은 EN 화면을 위해 영문 표기를 남겨 둡니다.
+     categories.json 의 Main · Minor · Edu 는 그대로 보여 줍니다. */
   var CATEGORY_EN = {
     "일상": "Daily",
     "생각": "Thoughts",
@@ -290,10 +301,74 @@
     return text;
   }
 
+  function normalizeCategories(data) {
+    var raw = Array.isArray(data) ? data : data && Array.isArray(data.categories) ? data.categories : [];
+    var out = [];
+    raw.forEach(function (item) {
+      var name = String(item == null ? "" : item).trim();
+      if (name && out.indexOf(name) === -1) out.push(name);
+    });
+    return out.length ? out : DEFAULT_CATEGORIES.slice();
+  }
+
+  function loadCategories() {
+    return fetch(CATEGORIES_FILE, { cache: "no-cache" })
+      .then(function (res) {
+        if (!res.ok) throw new Error("categories.json 을 읽지 못했어요 (" + res.status + ")");
+        return res.json();
+      })
+      .then(normalizeCategories)
+      .catch(function () {
+        return DEFAULT_CATEGORIES.slice();
+      });
+  }
+
+  function categoryList() {
+    return state.categories.length ? state.categories : DEFAULT_CATEGORIES;
+  }
+
+  function defaultCategory() {
+    return categoryList()[0];
+  }
+
+  /* 글이 가진 카테고리 (비어 있으면 categories.json 의 첫 항목) */
+  function catOf(post) {
+    var value = post && post.category != null ? String(post.category).trim() : "";
+    return value || defaultCategory();
+  }
+
   function catLabel(category) {
-    var value = category || "기록";
+    var value = category || defaultCategory();
     if (LANG === "en" && CATEGORY_EN[value]) return CATEGORY_EN[value];
     return value;
+  }
+
+  /* 목록에 있는 카테고리를 푸터의 Categories 칸에 그립니다. */
+  function paintFooterCategories(posts) {
+    var lists = document.querySelectorAll("[data-footer-cats]");
+    if (!lists.length) return;
+    var cats = categoryList().slice();
+    (posts || []).forEach(function (post) {
+      var cat = catOf(post);
+      if (cats.indexOf(cat) === -1) cats.push(cat);
+    });
+    Array.prototype.forEach.call(lists, function (list) {
+      list.innerHTML = cats
+        .map(function (cat) {
+          return (
+            '<li><a href="index.html?cat=' +
+            encodeURIComponent(cat) +
+            '#archive" data-cat-link="' +
+            escapeHtml(cat) +
+            '" data-cat-label="' +
+            escapeHtml(cat) +
+            '">' +
+            escapeHtml(catLabel(cat)) +
+            "</a></li>"
+          );
+        })
+        .join("");
+    });
   }
 
   function postTitle(post) {
@@ -971,9 +1046,9 @@
     var featuredSection = $("#featuredSection");
 
     function categoriesOf(list) {
-      var seen = [];
+      var seen = categoryList().slice();
       list.forEach(function (post) {
-        var cat = post.category || "기록";
+        var cat = catOf(post);
         if (seen.indexOf(cat) === -1) seen.push(cat);
       });
       return seen;
@@ -989,7 +1064,7 @@
             cat === "전체"
               ? state.posts.length
               : state.posts.filter(function (p) {
-                  return (p.category || "기록") === cat;
+                  return catOf(p) === cat;
                 }).length;
           var active = state.category === cat;
           return (
@@ -1012,7 +1087,7 @@
     function filtered() {
       var q = state.query.trim().toLowerCase();
       return state.posts.filter(function (post) {
-        var cat = post.category || "기록";
+        var cat = catOf(post);
         if (state.category !== "전체" && cat !== state.category) return false;
         if (!q) return true;
         var haystack = [
@@ -1068,6 +1143,11 @@
       state.query = value || "";
       if (searchClear) searchClear.hidden = !state.query;
       renderGrid();
+    }
+
+    // 푸터 카테고리 목록도 categories.json 을 따라갑니다(글 페이지에서는 목록으로 이동).
+    function renderFooterCategories() {
+      paintFooterCategories(state.posts);
     }
 
     // 이벤트
@@ -1132,24 +1212,48 @@
       });
     }
 
-    // 푸터 카테고리 링크
-    Array.prototype.forEach.call(document.querySelectorAll("[data-cat-link]"), function (link) {
-      link.addEventListener("click", function () {
-        setCategory(link.getAttribute("data-cat-link"));
-      });
+    // 푸터 카테고리 링크 (동적으로 그려지므로 문서에서 받습니다)
+    document.addEventListener("click", function (event) {
+      var link = event.target.closest ? event.target.closest("[data-cat-link]") : null;
+      if (!link) return;
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.button) return;
+      var cat = link.getAttribute("data-cat-link");
+      if (!cat) return;
+      event.preventDefault();
+      setCategory(cat);
+      var archive = document.getElementById("archive");
+      if (archive) {
+        archive.scrollIntoView({
+          behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+          block: "start"
+        });
+      }
     });
 
     initLangSwitch(function () {
       renderFilters();
+      renderFooterCategories();
       renderFeatured();
       renderGrid();
       document.title = t("title");
     });
 
-    loadPosts()
-      .then(function (posts) {
-        state.posts = posts;
+    Promise.all([loadCategories(), loadPosts()])
+      .then(function (results) {
+        state.categories = results[0];
+        state.posts = results[1];
+
+        // 푸터·공유 링크로 들어온 카테고리(index.html?cat=Minor)를 그대로 열어 줍니다.
+        var wanted = null;
+        try {
+          wanted = new URLSearchParams(location.search).get("cat");
+        } catch (error) {
+          wanted = null;
+        }
+        if (wanted && categoriesOf(state.posts).indexOf(wanted) !== -1) state.category = wanted;
+
         renderFilters();
+        renderFooterCategories();
         renderFeatured();
         renderGrid();
       })
@@ -1213,7 +1317,7 @@
         escapeHtml(t("backAll")) +
         "</a>" +
         '<p class="article-cat">' +
-        escapeHtml(catLabel(post.category)) +
+        escapeHtml(catLabel(catOf(post))) +
         "</p>" +
         '<h1 class="article-title">' +
         escapeHtml(postTitle(post)) +
@@ -1271,8 +1375,12 @@
       setupProgress();
     }
 
-    loadPosts()
-      .then(function (posts) {
+    Promise.all([loadCategories(), loadPosts()])
+      .then(function (results) {
+        var posts = results[1];
+        state.categories = results[0];
+        paintFooterCategories(posts);
+
         var index = -1;
         posts.forEach(function (p, idx) {
           if (p.slug === slug) index = idx;
@@ -1316,6 +1424,7 @@
       });
 
     initLangSwitch(function () {
+      paintFooterCategories(state.posts);
       if (!state.post) return;
       render();
     });
@@ -1354,40 +1463,117 @@
     return '<nav class="post-nav" aria-label="이전 글과 다음 글">' + item(prev, "prev") + item(next, "next") + "</nav>";
   }
 
-  function relatedHtml(post, posts, index) {
-    var same = posts.filter(function (p, idx) {
-      return idx !== index && (p.category || "기록") === (post.category || "기록");
+  /* ---------------------------------------------------------------------
+     연관 추천글
+     - 같은 카테고리(+3)와 겹치는 태그(+2)로 연관도를 계산하고,
+       상위 3편을 카드로 보여 줍니다. 모자라면 최신 글로 보충합니다.
+     --------------------------------------------------------------------- */
+  function relatedScore(base, candidate) {
+    var score = 0;
+    if (catOf(candidate) === catOf(base)) score += 3;
+
+    var baseTags = (base.tags || [])
+      .map(function (tag) {
+        return String(tag).trim().toLowerCase();
+      })
+      .filter(Boolean);
+    var shared = [];
+    (candidate.tags || []).forEach(function (tag) {
+      var name = String(tag).trim();
+      if (name && baseTags.indexOf(name.toLowerCase()) !== -1) shared.push(name);
     });
-    if (same.length < 2) {
-      posts.forEach(function (p, idx) {
-        if (idx !== index && same.indexOf(p) === -1 && same.length < 2) same.push(p);
+
+    return { score: score + shared.length * 2, shared: shared };
+  }
+
+  function relatedPosts(post, posts, index) {
+    var scored = [];
+    posts.forEach(function (candidate, idx) {
+      if (idx === index) return;
+      var rel = relatedScore(post, candidate);
+      scored.push({ post: candidate, score: rel.score, shared: rel.shared, idx: idx });
+    });
+
+    // 글 목록은 최신순이라 idx 가 작을수록 최신입니다(같은 점수면 최신 먼저).
+    var picked = scored
+      .filter(function (item) {
+        return item.score > 0;
+      })
+      .sort(function (a, b) {
+        if (b.score !== a.score) return b.score - a.score;
+        return a.idx - b.idx;
+      })
+      .slice(0, 3);
+
+    if (picked.length < 3) {
+      scored.forEach(function (item) {
+        if (picked.length >= 3) return;
+        if (item.score > 0) return;
+        picked.push(item);
       });
     }
-    if (!same.length) return "";
+
+    return picked.slice(0, 3);
+  }
+
+  function relatedHtml(post, posts, index) {
+    var picks = relatedPosts(post, posts, index);
+    if (!picks.length) return "";
 
     return (
       '<section class="related" aria-labelledby="relatedTitle">' +
-      '<div class="related-head"><h2 class="section-title" id="relatedTitle" style="font-size:1.15rem">' +
+      '<div class="related-head">' +
+      '<div class="related-heading">' +
+      '<p class="related-eyebrow">' +
+      escapeHtml(t("relatedNote")) +
+      "</p>" +
+      '<h2 class="related-title" id="relatedTitle">' +
       escapeHtml(t("related")) +
-      '</h2><a class="link-arrow" href="index.html#archive">' +
+      "</h2></div>" +
+      '<a class="link-arrow" href="index.html#archive">' +
       escapeHtml(t("seeAll")) +
       "</a></div>" +
       '<div class="related-grid">' +
-      same
-        .map(function (p) {
+      picks
+        .map(function (item) {
+          var p = item.post;
           return (
             '<a class="related-card" href="' +
             postUrl(p) +
-            '"><img src="' +
+            '">' +
+            '<span class="related-thumb"><img src="' +
             escapeHtml(p.cover || "assets/hero.jpg") +
-            '" alt="" loading="lazy" width="208" height="156">' +
-            "<div><h4>" +
+            '" alt="" loading="lazy" width="640" height="400"></span>' +
+            '<span class="related-body">' +
+            '<span class="related-cat">' +
+            escapeHtml(catLabel(catOf(p))) +
+            "</span>" +
+            '<span class="related-name">' +
             escapeHtml(postTitle(p)) +
-            "</h4><span>" +
-            escapeHtml(catLabel(p.category)) +
-            " · " +
+            "</span>" +
+            (postSummary(p)
+              ? '<span class="related-summary">' + escapeHtml(postSummary(p)) + "</span>"
+              : "") +
+            '<span class="related-meta">' +
+            "<span>" +
             escapeHtml(formatDate(p.date)) +
-            "</span></div></a>"
+            "</span>" +
+            (p.minutes
+              ? '<span class="related-dot" aria-hidden="true"></span><span>' +
+                escapeHtml(t("minRead", { n: Number(p.minutes) })) +
+                "</span>"
+              : "") +
+            (item.shared.length
+              ? '<span class="related-tags">' +
+                item.shared
+                  .slice(0, 2)
+                  .map(function (tag) {
+                    return "<em>#" + escapeHtml(tag) + "</em>";
+                  })
+                  .join("") +
+                "</span>"
+              : "") +
+            "</span></span></a>"
           );
         })
         .join("") +

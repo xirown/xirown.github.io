@@ -1,6 +1,6 @@
 ---
 title: 바다를 보러 간 날
-category: 일상
+category: Minor
 date: 2026-11-18
 summary: 바람이 세던 오후, 아무것도 하지 않기 위해 바다로 갔던 이야기.
 title_en: A day by the sea

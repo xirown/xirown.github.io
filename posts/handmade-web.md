@@ -1,6 +1,6 @@
 ---
 title: 손으로 만드는 웹, 다시 시작한 공부
-category: 작업·공부
+category: Edu
 date: 2026-11-06
 summary: 노트에 그린 구조를 HTML과 CSS로 옮기며 배운 것들, 그리고 요즘의 공부 방식.
 cover: assets/covers/handmade-web.jpg

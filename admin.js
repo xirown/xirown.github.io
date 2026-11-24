@@ -10,7 +10,8 @@
   var API = "https://api.github.com";
   var LS_KEY = "pureripple.admin.v1";
   var SS_PREVIEW = "pureripple.admin.preview";
-  var CATEGORIES = ["일상", "생각", "작업·공부"];
+  var CATEGORIES_FILE = "categories.json";
+  var DEFAULT_CATEGORIES = ["Main", "Minor", "Edu"];
   var DEFAULT_COVER = "assets/hero.jpg";
   var IMAGE_EXT = /^(jpe?g|png|webp|gif|avif|svg)$/i;
 
@@ -23,10 +24,13 @@
     repo: null,
     posts: [],
     site: { title: "Pureripple", author: "양갱" },
+    categories: DEFAULT_CATEGORIES.slice(),
+    categoriesLoaded: false,
     covers: [],
     current: null, // { originalSlug, isNew, dirty, loading }
     coverFile: null,
     pendingDelete: null,
+    pendingCategoryDelete: null,
     busy: false,
     slugTouched: false,
     previewTimer: null,
@@ -110,6 +114,69 @@
       if (item && out.indexOf(item) === -1) out.push(item);
     });
     return out;
+  }
+
+  /* ---------------------------------------------------------------------
+     카테고리 — categories.json 한 파일로 관리합니다.
+     --------------------------------------------------------------------- */
+  function normalizeCategories(data) {
+    var raw = Array.isArray(data) ? data : data && Array.isArray(data.categories) ? data.categories : [];
+    var out = [];
+    raw.forEach(function (item) {
+      var name = trim(item);
+      if (name && out.indexOf(name) === -1) out.push(name);
+    });
+    return out.length ? out : DEFAULT_CATEGORIES.slice();
+  }
+
+  function categoriesJsonText(list) {
+    return JSON.stringify({ categories: list }, null, 2) + "\n";
+  }
+
+  function catOf(post) {
+    var value = post && post.category != null ? trim(post.category) : "";
+    return value || state.categories[0] || DEFAULT_CATEGORIES[0];
+  }
+
+  function ensureCategories(force) {
+    if (state.categoriesLoaded && !force) return Promise.resolve(state.categories);
+    if (!state.mode) return Promise.resolve(state.categories);
+
+    var promise;
+    if (state.mode === "preview") {
+      promise = fetch(CATEGORIES_FILE, { cache: "no-cache" }).then(function (res) {
+        return res.ok ? res.json() : null;
+      });
+    } else {
+      promise = getFile(state.cfg, CATEGORIES_FILE).then(function (file) {
+        if (!file) return null;
+        try {
+          return JSON.parse(file.text);
+        } catch (error) {
+          return null;
+        }
+      });
+    }
+
+    return promise
+      .then(function (data) {
+        state.categories = normalizeCategories(data);
+        state.categoriesLoaded = true;
+        refreshCategoryOptions();
+        renderCategories();
+        return state.categories;
+      })
+      .catch(function (error) {
+        state.categoriesLoaded = true;
+        toast(describeError(error), "error");
+        return state.categories;
+      });
+  }
+
+  function putCategories(list, message) {
+    return getFile(state.cfg, CATEGORIES_FILE).then(function (file) {
+      return putTextWithRetry(state.cfg, CATEGORIES_FILE, categoriesJsonText(list), message, file ? file.sha : null);
+    });
   }
 
   /* ---------------------------------------------------------------------
@@ -559,6 +626,8 @@
     state.cfg = null;
     state.posts = [];
     state.site = { title: "Pureripple", author: "양갱" };
+    state.categories = DEFAULT_CATEGORIES.slice();
+    state.categoriesLoaded = false;
     state.current = null;
     state.coverFile = null;
     state.seo = emptySeo();
@@ -678,6 +747,10 @@
           });
         renderDashboard();
         loadCovers();
+        ensureCategories().then(function () {
+          renderCategories();
+          renderDashboard();
+        });
       })
       .catch(function (error) {
         if (el.dashLoading) el.dashLoading.hidden = true;
@@ -759,6 +832,273 @@
     loadAnalytics();
   }
 
+  /* 카테고리 관리 패널 ------------------------------------------------ */
+  function renderCategories() {
+    if (el.catCount) el.catCount.textContent = state.categories.length + "개";
+    if (!el.catList) return;
+
+    el.catList.innerHTML = state.categories
+      .map(function (cat) {
+        var count = state.posts.filter(function (post) {
+          return catOf(post) === cat;
+        }).length;
+        var last = state.categories.length <= 1;
+        return (
+          '<li class="ad-catitem" data-cat="' +
+          escapeHtml(cat) +
+          '"><span class="ad-catname">' +
+          escapeHtml(cat) +
+          '</span><span class="ad-catnum">' +
+          count +
+          '편</span><button class="ad-act ad-act--danger" type="button" data-act="cat-delete"' +
+          (last ? ' disabled title="카테고리는 하나 이상 있어야 해요"' : "") +
+          ">삭제</button></li>"
+        );
+      })
+      .join("");
+  }
+
+  function showCatError(message) {
+    if (!el.catError) return;
+    el.catError.textContent = message || "";
+    el.catError.hidden = !message;
+  }
+
+  function setCatBusy(busy) {
+    if (el.catAddBtn) {
+      el.catAddBtn.disabled = busy;
+      el.catAddBtn.textContent = busy ? "저장 중…" : "추가";
+    }
+    if (el.catInput) el.catInput.disabled = busy;
+    if (el.catDeleteConfirm) el.catDeleteConfirm.disabled = busy;
+    if (el.catList) el.catList.classList.toggle("is-busy", busy);
+  }
+
+  function addCategory() {
+    if (!el.catInput) return;
+    showCatError("");
+    var name = trim(el.catInput.value).replace(/\s+/g, " ");
+
+    if (!name) {
+      showCatError("카테고리 이름을 적어 주세요.");
+      el.catInput.focus();
+      return;
+    }
+    if (name.length > 24) {
+      showCatError("카테고리는 24자까지 쓸 수 있어요.");
+      el.catInput.focus();
+      return;
+    }
+    var taken = state.categories.some(function (cat) {
+      return cat.toLowerCase() === name.toLowerCase();
+    });
+    if (taken) {
+      showCatError("이미 있는 카테고리예요.");
+      el.catInput.focus();
+      return;
+    }
+
+    if (state.mode !== "live") {
+      state.categories = state.categories.concat([name]);
+      el.catInput.value = "";
+      renderCategories();
+      renderDashboard();
+      refreshCategoryOptions();
+      toast("미리보기 모드 — 추가한 것처럼 보여요. 토큰으로 로그인하면 categories.json 에 저장돼요.");
+      return;
+    }
+
+    setCatBusy(true);
+    var next = state.categories.concat([name]);
+    putCategories(next, "카테고리 추가: " + name)
+      .then(function () {
+        state.categories = next;
+        el.catInput.value = "";
+        renderCategories();
+        renderDashboard();
+        refreshCategoryOptions();
+        toast("‘" + name + "’ 카테고리를 추가했어요.", "success");
+      })
+      .catch(function (error) {
+        toast(describeError(error), "error");
+      })
+      .then(function () {
+        setCatBusy(false);
+      });
+  }
+
+  function askDeleteCategory(name) {
+    if (!name) return;
+    if (state.categories.length <= 1) {
+      toast("카테고리는 하나 이상 남겨 두어야 해요.", "error");
+      return;
+    }
+
+    var posts = state.posts.filter(function (post) {
+      return catOf(post) === name;
+    });
+    var rest = state.categories.filter(function (cat) {
+      return cat !== name;
+    });
+
+    state.pendingCategoryDelete = { name: name, count: posts.length };
+
+    if (el.catDeleteTitle) el.catDeleteTitle.textContent = "‘" + name + "’ 카테고리를 지울까요?";
+    if (el.catDeleteLede) {
+      el.catDeleteLede.textContent = posts.length
+        ? "이 카테고리에 글 " + posts.length + "편이 있어요. 지우면 그 글들은 아래 카테고리로 옮겨서 저장해요."
+        : "이 카테고리에 쓴 글은 없어요. 글은 그대로 두고 카테고리만 지울 수 있어요.";
+    }
+    if (el.catDeleteMove) el.catDeleteMove.hidden = !posts.length;
+    if (el.catDeleteTarget) {
+      el.catDeleteTarget.innerHTML = rest
+        .map(function (cat) {
+          return '<option value="' + escapeHtml(cat) + '">' + escapeHtml(cat) + "</option>";
+        })
+        .join("");
+      el.catDeleteTarget.value = rest[0];
+    }
+    if (el.catDeletePaths) {
+      el.catDeletePaths.innerHTML = posts.length
+        ? "옮길 글: " +
+          posts
+            .slice(0, 3)
+            .map(function (post) {
+              return "<code>posts/" + escapeHtml(post.slug) + ".md</code>";
+            })
+            .join(" ") +
+          (posts.length > 3 ? " 외 " + (posts.length - 3) + "편" : "") +
+          " · <code>posts.json</code> · <code>categories.json</code>"
+        : "바뀔 파일: <code>categories.json</code>";
+    }
+    openDialog(el.catDeleteDialog);
+  }
+
+  /* 글 파일의 front matter 에서 category 한 줄만 바꿉니다. */
+  function replaceFrontMatterCategory(text, to) {
+    var lines = String(text == null ? "" : text).replace(/\r\n/g, "\n").split("\n");
+    if (trim(lines[0]) !== "---") return lines.join("\n");
+
+    var end = -1;
+    for (var i = 1; i < lines.length; i++) {
+      if (trim(lines[i]) === "---" || trim(lines[i]) === "...") {
+        end = i;
+        break;
+      }
+    }
+    if (end === -1) return lines.join("\n");
+
+    var replaced = false;
+    for (var j = 1; j < end; j++) {
+      if (/^category\s*:/.test(lines[j])) {
+        lines[j] = "category: " + to;
+        replaced = true;
+        break;
+      }
+    }
+    if (!replaced) lines.splice(1, 0, "category: " + to);
+    return lines.join("\n");
+  }
+
+  function moveCategoryPosts(posts, to) {
+    return posts.reduce(function (chain, post) {
+      return chain.then(function () {
+        var path = post.file || "posts/" + post.slug + ".md";
+        return getFile(state.cfg, path).then(function (file) {
+          if (!file) return null;
+          var text = replaceFrontMatterCategory(file.text, to);
+          if (text === file.text) return null;
+          return putTextWithRetry(state.cfg, path, text, "카테고리 이동: " + post.title + " → " + to, file.sha);
+        });
+      });
+    }, Promise.resolve());
+  }
+
+  function deleteCategory() {
+    var pending = state.pendingCategoryDelete;
+    if (!pending) return;
+
+    var target = el.catDeleteTarget ? el.catDeleteTarget.value : "";
+    var posts = state.posts.filter(function (post) {
+      return catOf(post) === pending.name;
+    });
+    var rest = state.categories.filter(function (cat) {
+      return cat !== pending.name;
+    });
+
+    closeDialog(el.catDeleteDialog);
+
+    if (!rest.length) {
+      toast("카테고리는 하나 이상 남겨 두어야 해요.", "error");
+      return;
+    }
+    if (posts.length && rest.indexOf(target) === -1) target = rest[0];
+
+    if (state.mode !== "live") {
+      posts.forEach(function (post) {
+        post.category = target;
+      });
+      state.categories = rest;
+      state.pendingCategoryDelete = null;
+      renderCategories();
+      renderDashboard();
+      refreshCategoryOptions();
+      toast(
+        "미리보기 모드 — 실제로는 저장되지 않아요. 로그인하면 글 " +
+          posts.length +
+          "편을 ‘" +
+          target +
+          "’(으)로 옮기고 categories.json 을 고쳐요."
+      );
+      return;
+    }
+
+    setCatBusy(true);
+    var message = "카테고리 삭제: " + pending.name;
+
+    moveCategoryPosts(posts, target)
+      .then(function () {
+        if (!posts.length) return null;
+        return mutatePosts(
+          function (data) {
+            data.posts.forEach(function (post) {
+              if (post.category === pending.name) post.category = target;
+            });
+          },
+          "posts.json — 카테고리 이동: " + pending.name + " → " + target
+        );
+      })
+      .then(function () {
+        return putCategories(rest, message);
+      })
+      .then(function () {
+        state.categories = rest;
+        state.pendingCategoryDelete = null;
+        return loadDashboard(true);
+      })
+      .then(function () {
+        return syncFeed();
+      })
+      .then(function () {
+        return syncSitemap();
+      })
+      .then(function () {
+        toast(
+          "‘" +
+            pending.name +
+            "’ 카테고리를 지웠어요" +
+            (posts.length ? " — 글 " + posts.length + "편은 ‘" + target + "’(으)로 옮겼습니다." : "."),
+          "success"
+        );
+      })
+      .catch(function (error) {
+        toast(describeError(error), "error");
+      })
+      .then(function () {
+        setCatBusy(false);
+      });
+  }
+
   function renderDashboard() {
     if (el.dashLoading) el.dashLoading.hidden = true;
     if (el.dashError) el.dashError.hidden = true;
@@ -791,6 +1131,7 @@
     }
 
     if (el.postCount) el.postCount.textContent = total ? total + "편" : "";
+    renderCategories();
 
     if (!total) {
       if (el.postList) el.postList.innerHTML = "";
@@ -798,7 +1139,43 @@
       return;
     }
     if (el.dashEmpty) el.dashEmpty.hidden = true;
-    if (el.postList) el.postList.innerHTML = state.posts.map(postRowHtml).join("");
+    if (el.postList) el.postList.innerHTML = groupedPostListHtml();
+  }
+
+  /* 카테고리별로 묶어 보여 줍니다 — 섹션 헤더 + 편수 배지 */
+  function categoryGroups() {
+    var groups = state.categories.slice();
+    state.posts.forEach(function (post) {
+      var cat = catOf(post);
+      if (groups.indexOf(cat) === -1) groups.push(cat);
+    });
+    return groups;
+  }
+
+  function groupedPostListHtml() {
+    return categoryGroups()
+      .map(function (cat) {
+        var list = state.posts.filter(function (post) {
+          return catOf(post) === cat;
+        });
+        return (
+          '<section class="ad-catgroup" data-cat="' +
+          escapeHtml(cat) +
+          '">' +
+          '<header class="ad-catgroup-head">' +
+          '<h3 class="ad-catgroup-title">' +
+          escapeHtml(cat) +
+          '</h3><span class="ad-catgroup-count">' +
+          list.length +
+          "</span>" +
+          '</header>' +
+          (list.length
+            ? list.map(postRowHtml).join("")
+            : '<p class="ad-catgroup-empty">이 카테고리에 쓴 글은 아직 없어요.</p>') +
+          "</section>"
+        );
+      })
+      .join("");
   }
 
   function postRowHtml(post) {
@@ -829,7 +1206,7 @@
       escapeHtml(slug) +
       ".md</p>" +
       '<div class="ad-post-meta"><span class="ad-cat">' +
-      escapeHtml(post.category || "기록") +
+      escapeHtml(catOf(post)) +
       "</span><span>" +
       escapeHtml(formatDate(post.date)) +
       "</span>" +
@@ -1082,6 +1459,22 @@
       .filter(Boolean);
   }
 
+  /* 에디터의 카테고리 선택지를 categories.json 목록으로 채웁니다. */
+  function refreshCategoryOptions(selected) {
+    if (!el.categoryInput) return;
+    var current = selected !== undefined ? selected : el.categoryInput.value;
+    var list = state.categories.slice();
+    if (current && list.indexOf(current) === -1) list.push(current);
+    if (!list.length) list = DEFAULT_CATEGORIES.slice();
+
+    el.categoryInput.innerHTML = list
+      .map(function (cat) {
+        return '<option value="' + escapeHtml(cat) + '">' + escapeHtml(cat) + "</option>";
+      })
+      .join("");
+    el.categoryInput.value = current && list.indexOf(current) !== -1 ? current : list[0];
+  }
+
   function setEditorMode(isNew) {
     if (el.editorMode) el.editorMode.textContent = isNew ? "새 글" : "글 수정";
     if (el.saveBtn) el.saveBtn.textContent = isNew ? "발행하기" : "수정 저장";
@@ -1102,7 +1495,7 @@
     showFormError("");
     if (el.titleInput) el.titleInput.value = "";
     if (el.slugInput) el.slugInput.value = "";
-    if (el.categoryInput) el.categoryInput.value = "일상";
+    refreshCategoryOptions(state.categories[0]);
     if (el.dateInput) el.dateInput.value = todayValue();
     if (el.summaryInput) el.summaryInput.value = "";
     if (el.tagsInput) el.tagsInput.value = "";
@@ -1128,7 +1521,9 @@
     if (el.titleInput) el.titleInput.value = String(meta.title || "");
     if (el.slugInput) el.slugInput.value = slug;
     if (el.categoryInput) {
-      el.categoryInput.value = CATEGORIES.indexOf(meta.category) !== -1 ? meta.category : "일상";
+      refreshCategoryOptions(
+        meta.category && state.categories.indexOf(meta.category) !== -1 ? meta.category : state.categories[0]
+      );
     }
     if (el.dateInput) el.dateInput.value = /^\d{4}-\d{2}-\d{2}$/.test(meta.date) ? meta.date : todayValue();
     if (el.summaryInput) el.summaryInput.value = String(meta.summary || "");
@@ -1160,11 +1555,15 @@
     scrollToTop();
 
     refreshCoverOptions();
+    refreshCategoryOptions();
 
     if (!slug) {
       resetEditor();
       state.current.loading = false;
       if (!state.posts.length) loadDashboard(true);
+      ensureCategories().then(function () {
+        refreshCategoryOptions();
+      });
       if (el.titleInput) {
         setTimeout(function () {
           el.titleInput.focus({ preventScroll: true });
@@ -1195,8 +1594,9 @@
       });
     }
 
-    promise
-      .then(function (raw) {
+    Promise.all([promise, ensureCategories()])
+      .then(function (results) {
+        var raw = results[0];
         var parsed = parseFrontMatter(raw);
         fillEditor(slug, parsed.meta, parsed.body);
         state.current.loading = false;
@@ -1265,7 +1665,13 @@
       errors.push({ field: "slugInput", message: "주소는 영문 소문자·숫자·하이픈만 쓸 수 있어요. 예: a-day-by-the-sea" });
     }
 
-    if (CATEGORIES.indexOf(form.category) === -1) {
+    // categories.json 목록에 있는 값만 저장합니다.
+    // (목록에서 빠진 예전 카테고리를 그대로 두고 저장하는 경우는 그 값을 유지)
+    var allowed = state.categories.slice();
+    if (el.categoryInput && el.categoryInput.value && allowed.indexOf(el.categoryInput.value) === -1) {
+      allowed.push(el.categoryInput.value);
+    }
+    if (allowed.indexOf(form.category) === -1) {
       errors.push({ field: "categoryInput", message: "카테고리를 골라 주세요." });
     }
 
@@ -2950,16 +3356,16 @@
         .join("");
     }
 
-    var cats = CATEGORIES.map(function (cat) {
+    var cats = state.categories.map(function (cat) {
       return {
         name: cat,
         count: posts.filter(function (post) {
-          return (post.category || "기록") === cat;
+          return catOf(post) === cat;
         }).length
       };
     });
     var other = posts.filter(function (post) {
-      return CATEGORIES.indexOf(post.category) === -1;
+      return state.categories.indexOf(catOf(post)) === -1;
     }).length;
     if (other) cats.push({ name: "기타", count: other });
     var catMax = Math.max.apply(
@@ -3151,6 +3557,29 @@
         var slug = row.getAttribute("data-slug");
         if (button.getAttribute("data-act") === "edit") navigate("#/edit/" + encodeURIComponent(slug));
         else if (button.getAttribute("data-act") === "delete") askDelete(slug);
+      });
+    }
+
+    if (el.catForm) {
+      el.catForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        addCategory();
+      });
+    }
+
+    if (el.catInput) {
+      el.catInput.addEventListener("input", function () {
+        showCatError("");
+      });
+    }
+
+    if (el.catList) {
+      el.catList.addEventListener("click", function (event) {
+        var button = event.target.closest("[data-act='cat-delete']");
+        if (!button) return;
+        var item = button.closest(".ad-catitem");
+        if (!item) return;
+        askDeleteCategory(item.getAttribute("data-cat"));
       });
     }
   }
@@ -3386,11 +3815,22 @@
       });
     }
 
-    [el.deleteDialog, el.demoDialog].forEach(function (dialog) {
+    if (el.catDeleteCancel) {
+      el.catDeleteCancel.addEventListener("click", function () {
+        state.pendingCategoryDelete = null;
+        closeDialog(el.catDeleteDialog);
+      });
+    }
+    if (el.catDeleteConfirm) {
+      el.catDeleteConfirm.addEventListener("click", deleteCategory);
+    }
+
+    [el.deleteDialog, el.demoDialog, el.catDeleteDialog].forEach(function (dialog) {
       if (!dialog) return;
       dialog.addEventListener("click", function (event) {
         if (event.target === dialog) {
           if (dialog === el.deleteDialog) state.pendingDelete = null;
+          if (dialog === el.catDeleteDialog) state.pendingCategoryDelete = null;
           closeDialog(dialog);
         }
       });
@@ -3448,6 +3888,21 @@
       emptyNewBtn: $("#emptyNewBtn"),
       settingsBtn: $("#settingsBtn"),
       analyticsBtn: $("#analyticsBtn"),
+      catCount: $("#catCount"),
+      catList: $("#catList"),
+      catForm: $("#catForm"),
+      catInput: $("#catInput"),
+      catAddBtn: $("#catAddBtn"),
+      catHint: $("#catHint"),
+      catError: $("#catError"),
+      catDeleteDialog: $("#catDeleteDialog"),
+      catDeleteTitle: $("#catDeleteTitle"),
+      catDeleteLede: $("#catDeleteLede"),
+      catDeleteMove: $("#catDeleteMove"),
+      catDeleteTarget: $("#catDeleteTarget"),
+      catDeletePaths: $("#catDeletePaths"),
+      catDeleteCancel: $("#catDeleteCancel"),
+      catDeleteConfirm: $("#catDeleteConfirm"),
 
       settingsLede: $("#settingsLede"),
       settingsBack: $("#settingsBack"),

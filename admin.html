@@ -217,6 +217,39 @@
             </div>
           </div>
 
+          <!-- 카테고리 관리 -->
+          <div class="ad-panel ad-catpanel">
+            <div class="ad-panel-head">
+              <h2 class="ad-panel-title">카테고리 <span class="ad-count" id="catCount"></span></h2>
+              <span class="ad-repo">categories.json</span>
+            </div>
+            <div class="ad-catpanel-body">
+              <ul class="ad-catlist" id="catList" aria-label="카테고리 목록"></ul>
+
+              <form class="ad-catform" id="catForm" novalidate>
+                <label class="ad-field">
+                  <span class="ad-label">새 카테고리</span>
+                  <input
+                    class="ad-input"
+                    id="catInput"
+                    type="text"
+                    maxlength="24"
+                    placeholder="예: Notes"
+                    autocomplete="off"
+                    spellcheck="false"
+                  />
+                </label>
+                <button class="btn btn-primary ad-sm" id="catAddBtn" type="submit">추가</button>
+              </form>
+
+              <div class="ad-alert" id="catError" role="alert" hidden></div>
+              <p class="ad-hint" id="catHint">
+                여기 있는 목록이 공개 화면의 필터 칩과 글쓰기 선택지에 그대로 쓰여요. 카테고리를 지우면
+                그 카테고리의 글은 다른 카테고리로 옮겨서 저장해요.
+              </p>
+            </div>
+          </div>
+
           <p class="ad-footnote" id="dashFootnote">
             저장하면 GitHub 저장소에 바로 커밋돼요. 사이트에 반영되기까지 1분쯤 걸릴 수 있어요.
           </p>
@@ -481,9 +514,9 @@
                 <label class="ad-field">
                   <span class="ad-label">카테고리</span>
                   <select class="ad-input ad-select" id="categoryInput">
-                    <option value="일상">일상</option>
-                    <option value="생각">생각</option>
-                    <option value="작업·공부">작업·공부</option>
+                    <option value="Main">Main</option>
+                    <option value="Minor">Minor</option>
+                    <option value="Edu">Edu</option>
                   </select>
                 </label>
                 <label class="ad-field">
@@ -684,6 +717,24 @@
         <div class="ad-dialog-actions">
           <button class="btn btn-ghost" id="deleteCancel" type="button">취소</button>
           <button class="btn ad-btn-danger" id="deleteConfirm" type="button">삭제하기</button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- 카테고리 삭제 확인 -->
+    <dialog class="ad-dialog" id="catDeleteDialog" aria-labelledby="catDeleteTitle">
+      <div class="ad-dialog-panel">
+        <p class="ad-dialog-eyebrow">Categories</p>
+        <h2 class="ad-dialog-title" id="catDeleteTitle">카테고리를 지울까요?</h2>
+        <p class="ad-dialog-lede" id="catDeleteLede"></p>
+        <label class="ad-field ad-dialog-field" id="catDeleteMove">
+          <span class="ad-label">옮길 카테고리</span>
+          <select class="ad-input ad-select" id="catDeleteTarget"></select>
+        </label>
+        <p class="ad-dialog-note" id="catDeletePaths"></p>
+        <div class="ad-dialog-actions">
+          <button class="btn btn-ghost" id="catDeleteCancel" type="button">취소</button>
+          <button class="btn ad-btn-danger" id="catDeleteConfirm" type="button">지우기</button>
         </div>
       </div>
     </dialog>

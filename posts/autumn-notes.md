@@ -1,6 +1,6 @@
 ---
 title: 가을 작업 노트 — 만든 것들
-category: 작업·공부
+category: Minor
 date: 2026-10-21
 summary: 이번 가을에 만든 작은 것들을 위한 목록 — 만든 이유와 남은 숙제.
 cover: assets/covers/autumn-notes.jpg

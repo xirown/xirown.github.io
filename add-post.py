@@ -10,6 +10,7 @@ posts/ 폴더의 마크다운(.md) 파일을 읽어 posts.json 을 새로 만듭
 마크다운 맨 위의 --- 로 감싼 부분(제목/카테고리/날짜/요약/표지/태그)을 읽습니다.
 필요 없는 항목은 지워도 되고, 글자 수에 따라 읽는 시간(분)은 자동 계산됩니다.
 영문 버전은 같은 폴더의 `글주소.en.md` 에 두고, front matter 에 title_en · summary_en 을 적으면 됩니다.
+카테고리 목록은 categories.json 에서 읽습니다(기본: Main · Minor · Edu).
 """
 
 from __future__ import annotations
@@ -33,7 +34,7 @@ SITE = {
     "url": "",
 }
 
-CATEGORIES = ["일상", "생각", "작업·공부"]
+CATEGORIES = site_files.load_categories(ROOT)
 REQUIRED = ["title", "category", "date"]
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 

@@ -1,6 +1,6 @@
 ---
 title: 기록을 남기는 이유
-category: 생각
+category: Main
 date: 2026-11-12
 summary: 잊고 싶지 않은 것과 잊어도 괜찮은 것 사이에서, 기록이 해 주는 일.
 title_en: Why I keep a record
