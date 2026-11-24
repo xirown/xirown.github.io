@@ -163,7 +163,11 @@
       toTop: "맨 위로 ↑",
       mfEyebrow: "Mutual friend",
       mfTitle: "서로이웃 <em>신청</em>",
-      mfLede: "Pureripple의 새 글을 가장 먼저 나누고, 서로의 기록에 가끔 들르는 이웃이 되고 싶어요. 이름과 한마디만 남겨 주세요.",
+      mfLede: "Pureripple의 새 글을 가장 먼저 나누는 이웃 기능을 준비하고 있어요.",
+      mfSoonLabel: "준비 중",
+      mfSoonTitle: "현재 서로이웃 기능은 아직 활성화 전(준비 중)입니다",
+      mfSoonBody: "곧 문을 열면 이곳에서 신청을 받을게요. 그동안 새 글은 RSS로 가장 먼저 받아 보실 수 있어요.",
+      mfSoonRss: "RSS로 새 글 받기",
       mfName: "닉네임",
       mfNamePh: "서로 부를 이름",
       mfNote: "한마디",
@@ -244,7 +248,11 @@
       toTop: "Back to top ↑",
       mfEyebrow: "Mutual friend",
       mfTitle: "Become a <em>mutual friend</em>",
-      mfLede: "I'd love to share new Pureripple posts with you first, and drop by your own records now and then. Just leave a name and a line.",
+      mfLede: "I'm getting the mutual-friend feature ready, so new Pureripple posts can reach you first.",
+      mfSoonLabel: "In preparation",
+      mfSoonTitle: "The mutual friend feature isn't active yet — it's still in preparation.",
+      mfSoonBody: "Once it opens, you'll be able to sign up right here. Until then, new posts can reach you first by RSS.",
+      mfSoonRss: "Follow by RSS",
       mfName: "Nickname",
       mfNamePh: "What should I call you?",
       mfNote: "A line",
@@ -837,58 +845,24 @@
   }
 
   /* ---------------------------------------------------------------------
-     서로이웃 신청 모달 (Mutual friend)
-     - 정적 사이트라 서버로 보내지 않고, 적은 내용을 그대로 전할 수 있는
-       문장으로 만들어 복사하거나 X·이메일로 보내게 합니다.
-     - 아래 MF_CONTACT 에 X 아이디·이메일을 채우면 '바로 보내기' 버튼이 나타납니다.
+     서로이웃 모달 (Mutual friend)
+     - 기능이 열리기 전이라 버튼은 그대로 두고, 누르면 준비 중 안내만 보여 줍니다.
+     - 정적 사이트라 신청 폼은 두지 않았습니다. 열릴 때 이 안내를 폼으로 바꾸면 됩니다.
      --------------------------------------------------------------------- */
-  var MF_CONTACT = {
-    x: "",
-    email: ""
-  };
-
   function initMutualFriend() {
     var dialog = $("#mutualFriendDialog");
     var openBtn = $("#mutualFriendOpen");
     if (!dialog || !openBtn) return;
 
-    var form = $("#mfForm", dialog);
-    var nameInput = $("#mfName", dialog);
-    var noteInput = $("#mfNote", dialog);
-    var contactInput = $("#mfContact", dialog);
-    var errorEl = $("#mfError", dialog);
-    var donePanel = $("#mfDone", dialog);
-    var doneTitle = $("#mfDoneTitle", dialog);
-    var doneBody = $("#mfDoneBody", dialog);
-    var preview = $("#mfPreview", dialog);
-    var copyBtn = $("#mfCopy", dialog);
-    var sendX = $("#mfSendX", dialog);
-    var sendMail = $("#mfSendMail", dialog);
-    var message = "";
-
-    function setError(show) {
-      if (errorEl) errorEl.hidden = !show;
-      nameInput.setAttribute("aria-invalid", show ? "true" : "false");
-    }
-
     function openDialog() {
-      form.reset();
-      setError(false);
-      form.hidden = false;
-      donePanel.hidden = true;
-      dialog.querySelector(".mf-panel").classList.remove("is-done");
-      copyBtn.textContent = t("mfCopy");
-      copyBtn.classList.remove("is-copied");
-
       if (typeof dialog.showModal === "function") {
         dialog.showModal();
       } else {
         dialog.setAttribute("open", "");
       }
       document.body.classList.add("mf-open");
-      window.setTimeout(function () {
-        nameInput.focus({ preventScroll: true });
-      }, 60);
+      var title = $("#mfSoonTitle", dialog);
+      if (title) title.focus({ preventScroll: true });
     }
 
     function closeDialog() {
@@ -900,49 +874,11 @@
       }
     }
 
-    function composeMessage(name, note, contact) {
-      var lines = [t("mfMsgTitle"), t("mfMsgName") + ": " + name];
-      if (note) lines.push(t("mfMsgNote") + ": " + note);
-      if (contact) lines.push(t("mfMsgContact") + ": " + contact);
-      return lines.join("\n");
-    }
-
-    function hasSendChannel() {
-      return !!(MF_CONTACT.x || MF_CONTACT.email);
-    }
-
-    function legacyCopy() {
-      var range = document.createRange();
-      range.selectNodeContents(preview);
-      var selection = window.getSelection();
-      selection.removeAllRanges();
-      selection.addRange(range);
-      try {
-        return document.execCommand("copy");
-      } catch (error) {
-        return false;
-      }
-    }
-
-    function copyText(text, done) {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(
-          function () {
-            done(true);
-          },
-          function () {
-            done(legacyCopy());
-          }
-        );
-      } else {
-        done(legacyCopy());
-      }
-    }
-
     openBtn.addEventListener("click", openDialog);
-    $("#mfClose", dialog).addEventListener("click", closeDialog);
-    $("#mfCancel", dialog).addEventListener("click", closeDialog);
-    $("#mfDoneClose", dialog).addEventListener("click", closeDialog);
+    var closeBtn = $("#mfClose", dialog);
+    if (closeBtn) closeBtn.addEventListener("click", closeDialog);
+    var soonClose = $("#mfSoonClose", dialog);
+    if (soonClose) soonClose.addEventListener("click", closeDialog);
 
     // ESC 로 닫혔을 때도 스크롤 잠금을 풀어 줍니다.
     dialog.addEventListener("close", function () {
@@ -952,79 +888,6 @@
     // 백드롭을 누르면 닫기
     dialog.addEventListener("click", function (event) {
       if (event.target === dialog) closeDialog();
-    });
-
-    nameInput.addEventListener("input", function () {
-      if (nameInput.value.trim()) setError(false);
-    });
-
-    form.addEventListener("submit", function (event) {
-      event.preventDefault();
-      var name = nameInput.value.trim();
-      if (!name) {
-        setError(true);
-        nameInput.focus();
-        return;
-      }
-
-      message = composeMessage(name, noteInput.value.trim(), contactInput.value.trim());
-
-      doneTitle.textContent = t("mfDoneTitleName", { name: name });
-      preview.textContent = message;
-      form.hidden = true;
-      donePanel.hidden = false;
-      dialog.querySelector(".mf-panel").classList.add("is-done");
-
-      if (sendX) {
-        if (MF_CONTACT.x) {
-          sendX.href = "https://x.com/" + encodeURIComponent(MF_CONTACT.x.replace(/^@/, ""));
-          sendX.hidden = false;
-        } else {
-          sendX.hidden = true;
-        }
-      }
-
-      if (sendMail) {
-        if (MF_CONTACT.email) {
-          sendMail.href =
-            "mailto:" +
-            MF_CONTACT.email +
-            "?subject=" +
-            encodeURIComponent("Pureripple 서로이웃 신청") +
-            "&body=" +
-            encodeURIComponent(message);
-          sendMail.hidden = false;
-        } else {
-          sendMail.hidden = true;
-        }
-      }
-
-      if (doneBody) {
-        doneBody.textContent = hasSendChannel() ? t("mfDoneBodySend") : t("mfDoneBody");
-      }
-
-      // 보낼 곳이 정해지기 전에는 복사를 주 동작으로
-      if (copyBtn) {
-        copyBtn.classList.toggle("btn-primary", !hasSendChannel());
-        copyBtn.classList.toggle("btn-ghost", hasSendChannel());
-      }
-
-      doneTitle.focus({ preventScroll: true });
-    });
-
-    copyBtn.addEventListener("click", function () {
-      copyText(message, function (ok) {
-        copyBtn.textContent = ok ? t("mfCopied") : t("mfCopyFail");
-        copyBtn.classList.toggle("is-copied", ok);
-        if (ok) {
-          window.setTimeout(function () {
-            copyBtn.textContent = t("mfCopy");
-            copyBtn.classList.remove("is-copied");
-          }, 2200);
-        } else {
-          legacyCopy();
-        }
-      });
     });
   }
 

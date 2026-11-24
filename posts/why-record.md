@@ -7,7 +7,7 @@ title_en: Why I keep a record
 summary_en: What keeping a record does, between what I want to remember and what I can let go.
 cover: assets/covers/why-record.jpg
 tags: 기록, 글쓰기, 기억
-featured: true
+featured: false
 ---
 
 가끔 작년 이맘때의 메모를 읽는다. 그때는 중요해서 밑줄까지 그은 일이 지금은 거의 기억나지 않는다. 반대로 아무렇게나 적어 둔 한 줄이 오래 남아 있기도 한다. 기록의 수명은 내가 정할 수 없다는 뜻이다.

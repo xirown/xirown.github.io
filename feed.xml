@@ -5,8 +5,16 @@
     <link>https://xirown.github.io/</link>
     <description>일상과 생각, 작업의 기록을 천천히 쌓아 두는 개인 블로그.</description>
     <language>ko</language>
-    <lastBuildDate>Sat, 21 Nov 2026 09:00:00 +0900</lastBuildDate>
+    <lastBuildDate>Wed, 25 Nov 2026 09:00:00 +0900</lastBuildDate>
     <atom:link href="https://xirown.github.io/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[간담회 참여 및 제보] 대학은 무엇을 평가하는가</title>
+      <link>https://xirown.github.io/post.html?slug=forum-2026</link>
+      <guid isPermaLink="true">https://xirown.github.io/post.html?slug=forum-2026</guid>
+      <pubDate>Wed, 25 Nov 2026 09:00:00 +0900</pubDate>
+      <category>Edu</category>
+      <description>줄 세우기와 학벌을 넘어, 능력주의를 다시 묻는다. 12월 중 서울 모처 공개 간담회 참여자 및 학내 족보·AI 부정행위 사례 제보를 받습니다.</description>
+    </item>
     <item>
       <title>Pureripple을 시작하며</title>
       <link>https://xirown.github.io/post.html?slug=start</link>

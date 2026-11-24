@@ -263,92 +263,24 @@
           </p>
         </div>
 
-        <form class="mf-form" id="mfForm" novalidate>
-          <div>
-            <label class="mf-label" for="mfName"
-              ><span data-i18n="mfName">닉네임</span>
-              <span class="mf-optional" data-i18n="mfRequired">필수</span></label
-            >
-            <input
-              class="mf-input"
-              id="mfName"
-              name="nickname"
-              type="text"
-              maxlength="20"
-              placeholder="서로 부를 이름"
-              data-i18n-ph="mfNamePh"
-              autocomplete="nickname"
-              aria-describedby="mfError"
-              required
-            />
-          </div>
-
-          <div>
-            <label class="mf-label" for="mfNote"
-              ><span data-i18n="mfNote">한마디</span>
-              <span class="mf-optional" data-i18n="mfOptional">선택</span></label
-            >
-            <textarea
-              class="mf-input"
-              id="mfNote"
-              name="note"
-              rows="3"
-              maxlength="160"
-              placeholder="요즘 마음에 남은 것, 혹은 인사 한 줄"
-              data-i18n-ph="mfNotePh"
-            ></textarea>
-          </div>
-
-          <div>
-            <label class="mf-label" for="mfContact"
-              ><span data-i18n="mfContact">연락처</span>
-              <span class="mf-optional" data-i18n="mfOptional">선택</span></label
-            >
-            <input
-              class="mf-input"
-              id="mfContact"
-              name="contact"
-              type="text"
-              maxlength="60"
-              placeholder="블로그 주소 · X · 이메일"
-              data-i18n-ph="mfContactPh"
-            />
-          </div>
-
-          <p class="mf-error" id="mfError" role="alert" data-i18n="mfError" hidden>
-            닉네임을 적어 주세요.
-          </p>
-          <p class="mf-privacy" data-i18n="mfPrivacy">
-            남겨 주신 연락처는 서로이웃 답장에만 쓸게요.
-          </p>
-
-          <div class="mf-actions">
-            <button class="btn btn-ghost" type="button" id="mfCancel" data-i18n="mfCancel">닫기</button>
-            <button class="btn btn-primary" type="submit" data-i18n="mfSubmit">신청하기</button>
-          </div>
-        </form>
-
-        <div class="mf-done" id="mfDone" hidden>
+        <div class="mf-done mf-soon" id="mfSoon">
           <span class="mf-badge" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 20.1c-1.2-.8-7.3-4.9-7.3-9.3a4 4 0 0 1 7.3-2.4 4 4 0 0 1 7.3 2.4c0 4.4-6.1 8.5-7.3 9.3z"></path>
+              <circle cx="12" cy="12" r="8.4"></circle>
+              <path d="M12 7.6V12l3 1.9"></path>
             </svg>
           </span>
-          <h3 class="mf-done-title" id="mfDoneTitle" tabindex="-1" data-i18n="mfDoneTitle">
-            신청서가 준비됐어요
+          <p class="mf-state" data-i18n="mfSoonLabel">준비 중</p>
+          <h3 class="mf-done-title" id="mfSoonTitle" tabindex="-1" data-i18n="mfSoonTitle">
+            현재 서로이웃 기능은 아직 활성화 전(준비 중)입니다
           </h3>
-          <p class="mf-done-body" id="mfDoneBody" data-i18n="mfDoneBody">
-            아래 내용을 복사해서 X DM이나 이메일로 보내 주시면, 확인하고
-            천천히 답장 드릴게요.
+          <p class="mf-done-body" data-i18n="mfSoonBody">
+            곧 문을 열면 이곳에서 신청을 받을게요. 그동안 새 글은 RSS로 가장 먼저
+            받아 보실 수 있어요.
           </p>
-          <pre class="mf-preview" id="mfPreview"></pre>
           <div class="mf-actions">
-            <button class="btn btn-ghost mf-copy" type="button" id="mfCopy" data-i18n="mfCopy">
-              내용 복사
-            </button>
-            <a class="btn btn-primary" id="mfSendX" href="#" data-i18n="mfSendX" hidden>X로 보내기</a>
-            <a class="btn btn-primary" id="mfSendMail" href="#" data-i18n="mfSendMail" hidden>이메일로 보내기</a>
-            <button class="btn btn-ghost" type="button" id="mfDoneClose" data-i18n="mfCancel">닫기</button>
+            <a class="btn btn-ghost" href="feed.xml" data-i18n="mfSoonRss">RSS로 새 글 받기</a>
+            <button class="btn btn-primary" type="button" id="mfSoonClose" data-i18n="mfCancel">닫기</button>
           </div>
         </div>
       </div>
