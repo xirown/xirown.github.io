@@ -5,8 +5,16 @@
     <link>https://xirown.github.io/</link>
     <description>일상과 생각, 작업의 기록을 천천히 쌓아 두는 개인 블로그.</description>
     <language>ko</language>
-    <lastBuildDate>Wed, 25 Nov 2026 09:00:00 +0900</lastBuildDate>
+    <lastBuildDate>Fri, 27 Nov 2026 09:00:00 +0900</lastBuildDate>
     <atom:link href="https://xirown.github.io/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>단속과 엄포 너머, 우리는 무엇을 평가하려 하는가</title>
+      <link>https://xirown.github.io/post.html?slug=beyond-crackdown-2027</link>
+      <guid isPermaLink="true">https://xirown.github.io/post.html?slug=beyond-crackdown-2027</guid>
+      <pubDate>Fri, 27 Nov 2026 09:00:00 +0900</pubDate>
+      <category>Edu</category>
+      <description>단추를 가리고 와이파이를 끄는 대응은 왜 반복되는가. AI 부정행위 사태 뒤에 남은 평가 구조의 문제를 묻는다.</description>
+    </item>
     <item>
       <title>[간담회 참여 및 제보] 대학은 무엇을 평가하는가</title>
       <link>https://xirown.github.io/post.html?slug=forum-2026</link>

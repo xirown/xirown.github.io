@@ -5,8 +5,27 @@
     "author": "양갱",
     "url": ""
   },
-  "generatedAt": "2026-11-25T03:05:00",
+  "generatedAt": "2026-11-27T08:57:12",
   "posts": [
+    {
+      "slug": "beyond-crackdown-2027",
+      "title": "단속과 엄포 너머, 우리는 무엇을 평가하려 하는가",
+      "category": "Edu",
+      "date": "2026-11-27",
+      "summary": "단추를 가리고 와이파이를 끄는 대응은 왜 반복되는가. AI 부정행위 사태 뒤에 남은 평가 구조의 문제를 묻는다.",
+      "cover": "assets/hero.jpg",
+      "tags": [
+        "수능",
+        "AI 부정행위",
+        "평가제도",
+        "능력주의",
+        "교육"
+      ],
+      "author": "양갱",
+      "featured": false,
+      "minutes": 3,
+      "file": "posts/beyond-crackdown-2027.md"
+    },
     {
       "slug": "forum-2026",
       "title": "[간담회 참여 및 제보] 대학은 무엇을 평가하는가",
